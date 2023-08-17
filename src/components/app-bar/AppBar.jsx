@@ -32,6 +32,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import Groups2Icon from "@mui/icons-material/Groups2";
 import { Link } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 
 const drawerWidth = 240;
 const activeColor = "rgba(255, 255, 255, 0.08)";
@@ -73,6 +74,7 @@ const drawerMenu = [
     isActive: false,
     hasChildren: false,
     link: "/",
+    roles: ["ADMIN", "EMPLOYEE", "HOD"],
   },
   {
     title: "Department",
@@ -80,27 +82,31 @@ const drawerMenu = [
     isActive: false,
     hasChildren: false,
     link: "/department",
+    roles: ["ADMIN", "HOD"],
   },
   {
     title: "Employee",
     icon: <PeopleIcon />,
     isActive: false,
     hasChildren: true,
-    collapseText: "employee",
+    collapseText: "EMPLOYEE",
+    roles: ["ADMIN", "HOD"],
     children: [
       {
         title: "Add Employee",
         icon: <PersonAddAltIcon />,
         isActive: false,
-        parent: "employee",
+        parent: "EMPLOYEE",
         link: "/employees/add",
+        roles: ["ADMIN", "HOD"],
       },
       {
         title: "Employee List",
         icon: <Groups2Icon />,
         isActive: false,
-        parent: "employee",
+        parent: "EMPLOYEE",
         link: "/employees",
+        roles: ["ADMIN", "HOD"],
       },
     ],
   },
@@ -110,6 +116,7 @@ const drawerMenu = [
     isActive: false,
     hasChildren: false,
     link: "/leaves/leave-types",
+    roles: ["ADMIN", "HOD"],
   },
   {
     title: "Leave",
@@ -117,6 +124,7 @@ const drawerMenu = [
     isActive: false,
     hasChildren: true,
     collapseText: "leave",
+    roles: ["ADMIN", "EMPLOYEE", "HOD"],
     children: [
       {
         title: "All-leave",
@@ -124,6 +132,7 @@ const drawerMenu = [
         isActive: false,
         parent: "leave",
         link: "/leaves",
+        roles: ["ADMIN", "HOD"],
       },
       {
         title: "apply-leave",
@@ -131,6 +140,7 @@ const drawerMenu = [
         isActive: false,
         parent: "leave",
         link: "/leaves/apply",
+        roles: ["EMPLOYEE", "HOD"],
       },
       {
         title: "Pending",
@@ -138,6 +148,7 @@ const drawerMenu = [
         isActive: false,
         parent: "leave",
         link: "/leaves/pending",
+        roles: ["ADMIN", "HOD", "EMPLOYEE"],
       },
       {
         title: "Approved",
@@ -145,6 +156,7 @@ const drawerMenu = [
         isActive: false,
         parent: "leave",
         link: "/leaves/approved",
+        roles: ["ADMIN", "HOD", "EMPLOYEE"],
       },
       {
         title: "Rejected",
@@ -152,6 +164,7 @@ const drawerMenu = [
         isActive: false,
         parent: "leave",
         link: "/leaves/rejected",
+        roles: ["ADMIN", "HOD", "EMPLOYEE"],
       },
       {
         title: "Leave History",
@@ -159,6 +172,7 @@ const drawerMenu = [
         isActive: false,
         parent: "leave",
         link: "/leaves/history",
+        roles: ["ADMIN", "HOD", "EMPLOYEE"],
       },
     ],
   },
@@ -221,6 +235,8 @@ export default function DrawerAppBar({ children }) {
     setCollapse(temp);
   };
 
+  const { user } = useAuth();
+
   return (
     <Box sx={{ display: "flex" }}>
       <AppBar elevation={0} position="fixed" open={open}>
@@ -261,10 +277,11 @@ export default function DrawerAppBar({ children }) {
         </DrawerHeader>
         <Divider />
         <List>
-          {drawerMenu.map((item, index) => {
+          {drawerMenu.map((item) => {
             const conditions = item.collapseText
               ? collapse[item.collapseText]
               : false;
+            const checkParentRole = item.roles.includes(user?.role);
             return (
               <ListItem
                 key={item.title}
@@ -272,84 +289,113 @@ export default function DrawerAppBar({ children }) {
                 sx={{ display: "block" }}
               >
                 {!item.hasChildren ? (
-                  <Link to={item.link || ""} style={{ textDecoration: "none" }}>
-                    <ListItemButton
-                      sx={{
-                        minHeight: 48,
-                        justifyContent: open ? "initial" : "center",
-                        px: 2.5,
-                      }}
-                    >
-                      <ListItemIcon
-                        sx={{
-                          minWidth: 0,
-                          mr: open ? 3 : "auto",
-                          justifyContent: "center",
-                        }}
+                  <>
+                    {checkParentRole && (
+                      <Link
+                        to={item.link || ""}
+                        style={{ textDecoration: "none" }}
                       >
-                        {item.icon}
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={item.title}
-                        sx={{ opacity: open ? 1 : 0 }}
-                        primaryTypographyProps={{
-                          color: "textPrimary",
-                        }}
-                      />
-                    </ListItemButton>
-                  </Link>
+                        <ListItemButton
+                          sx={{
+                            minHeight: 48,
+                            justifyContent: open ? "initial" : "center",
+                            px: 2.5,
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 0,
+                              mr: open ? 3 : "auto",
+                              justifyContent: "center",
+                            }}
+                          >
+                            {item.icon}
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={item.title}
+                            sx={{ opacity: open ? 1 : 0 }}
+                            primaryTypographyProps={{
+                              color: "textPrimary",
+                            }}
+                          />
+                        </ListItemButton>
+                      </Link>
+                    )}
+                  </>
                 ) : (
                   <>
-                    <ListItemButton
-                      onClick={() => handleCollapse(item.collapseText)}
-                      sx={{
-                        minHeight: 48,
-                        justifyContent: open ? "initial" : "center",
-                        px: 2.5,
-                        backgroundColor: item.isActive ? activeColor : "",
-                      }}
-                    >
-                      <ListItemIcon
-                        sx={{
-                          minWidth: 0,
-                          mr: open ? 3 : "auto",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {item.icon}
-                      </ListItemIcon>
-                      <ListItemText sx={{ opacity: open ? 1 : 0 }}>
-                        <Stack direction="row" justifyContent="space-between">
-                          <Typography>{item.title}</Typography>
-                          {conditions ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                        </Stack>
-                      </ListItemText>
-                    </ListItemButton>
-                    <Collapse in={conditions} timeout="auto" unmountOnExit>
-                      <List component="div" disablePadding>
-                        {item.children &&
-                          item.children.map((child) => (
-                            <Link
-                              key={child.link}
-                              to={child.link || ""}
-                              style={{ textDecoration: "none" }}
+                    {checkParentRole && (
+                      <>
+                        <ListItemButton
+                          onClick={() => handleCollapse(item.collapseText)}
+                          sx={{
+                            minHeight: 48,
+                            justifyContent: open ? "initial" : "center",
+                            px: 2.5,
+                            backgroundColor: item.isActive ? activeColor : "",
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 0,
+                              mr: open ? 3 : "auto",
+                              justifyContent: "center",
+                            }}
+                          >
+                            {item.icon}
+                          </ListItemIcon>
+                          <ListItemText sx={{ opacity: open ? 1 : 0 }}>
+                            <Stack
+                              direction="row"
+                              justifyContent="space-between"
                             >
-                              <ListItemButton
-                                href={child.link ? child.link : ""}
-                                sx={{ pl: 4 }}
-                              >
-                                <ListItemIcon>{child.icon}</ListItemIcon>
-                                <ListItemText
-                                  primary={child.title}
-                                  primaryTypographyProps={{
-                                    color: "textPrimary",
-                                  }}
-                                />
-                              </ListItemButton>
-                            </Link>
-                          ))}
-                      </List>
-                    </Collapse>
+                              <Typography>{item.title}</Typography>
+                              {conditions ? (
+                                <ExpandLessIcon />
+                              ) : (
+                                <ExpandMoreIcon />
+                              )}
+                            </Stack>
+                          </ListItemText>
+                        </ListItemButton>
+                        <Collapse in={conditions} timeout="auto" unmountOnExit>
+                          <List component="div" disablePadding>
+                            {item.children &&
+                              item.children.map((child) => {
+                                const checkChildRole = child.roles.includes(
+                                  user?.role
+                                );
+                                return (
+                                  <>
+                                    {checkChildRole && (
+                                      <Link
+                                        key={child.link}
+                                        to={child.link || ""}
+                                        style={{ textDecoration: "none" }}
+                                      >
+                                        <ListItemButton
+                                          href={child.link ? child.link : ""}
+                                          sx={{ pl: 4 }}
+                                        >
+                                          <ListItemIcon>
+                                            {child.icon}
+                                          </ListItemIcon>
+                                          <ListItemText
+                                            primary={child.title}
+                                            primaryTypographyProps={{
+                                              color: "textPrimary",
+                                            }}
+                                          />
+                                        </ListItemButton>
+                                      </Link>
+                                    )}
+                                  </>
+                                );
+                              })}
+                          </List>
+                        </Collapse>
+                      </>
+                    )}
                   </>
                 )}
               </ListItem>

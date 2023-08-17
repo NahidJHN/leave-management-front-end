@@ -11,6 +11,7 @@ import { useGetDepartmentQuery } from "../../redux/services/department.service";
 import useAuth from "../../hooks/useAuth";
 import employeeFormData from "./Employee-Form";
 import { toISO } from "../../utils/dateFormatter";
+import { Link } from "react-router-dom";
 
 const Employee = () => {
   const [open, setOpen] = useState(false);
@@ -127,7 +128,6 @@ const Employee = () => {
             hasAction={true}
             deleteHandler={deleteHandler}
             editHandler={editHandler}
-            dependency={department}
           />
         </Paper>
       </Stack>

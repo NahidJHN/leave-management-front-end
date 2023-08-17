@@ -22,6 +22,10 @@ export default function DataTable(props) {
     setRows(props.rows);
   }, [props.rows]);
 
+  React.useLayoutEffect(() => {
+    setColumns(props.columns);
+  }, [props.columns]);
+
   React.useMemo(() => {
     if (props.hasAction) {
       const actionData = {
@@ -59,7 +63,7 @@ export default function DataTable(props) {
       };
       setColumns([...props.columns, actionData]);
     }
-  }, [props.columns, props.columns]);
+  }, [props.columns]);
 
   return (
     <Box>
@@ -87,3 +91,7 @@ export default function DataTable(props) {
     </Box>
   );
 }
+
+DataTable.defaultProps = {
+  dependencies: [],
+};
