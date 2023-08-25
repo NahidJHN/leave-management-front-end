@@ -15,6 +15,8 @@ import PendingLeaves from "../pages/Leaves/Pending-Leaves";
 import ApprovedLeaves from "../pages/Leaves/Approved-Leaves";
 import RejectedLeaves from "../pages/Leaves/Rejected-Leaves";
 import ApplyLeave from "../pages/Leaves/Apply-Leave";
+import AddHod from "../pages/Hod/AddHod";
+import Hod from "../pages/Hod/Hod";
 
 const Router = () => {
   return (
@@ -26,6 +28,10 @@ const Router = () => {
         <Route path="employees">
           <Route path="add" element={<AddEmployee />} />
           <Route path="" element={<Employee />} />
+        </Route>
+        <Route path="hods">
+          <Route path="add" element={<AddHod />} />
+          <Route path="" element={<Hod />} />
         </Route>
         <Route path="leaves">
           <Route path="leave-types" element={<LeaveType />} />

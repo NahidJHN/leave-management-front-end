@@ -55,6 +55,7 @@ const ApplyLeave = () => {
       startDate: data.startDate.toISOString(),
       employee: employee?._id,
       numOfDay,
+      department: employee.department,
     });
   };
 

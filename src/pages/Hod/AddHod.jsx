@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Box, Paper, Stack, Typography } from "@mui/material";
 import AppHeader from "../../components/app-header/AppHeader";
 import { LoadingButton } from "@mui/lab";
@@ -7,19 +7,18 @@ import FormComponent from "../../components/Form/Form";
 import useAuth from "../../hooks/useAuth";
 import { useGetDepartmentQuery } from "../../redux/services/department.service";
 import { toISO } from "../../utils/dateFormatter";
-import { useEmployeeCreateMutation } from "../../redux/services/employee.service";
+import { useHodCreateMutation } from "../../redux/services/hod.service";
 import SendIcon from "@mui/icons-material/Send";
-import employeeFormData from "./Employee-Form";
+import hodFormData from "./Hod-Form";
 
-const AddEmployee = () => {
+const AddHod = () => {
   const { user } = useAuth();
 
   const { data: department } = useGetDepartmentQuery(user?.admin, {
     skip: !user,
   });
 
-  const [employeeCreate, { isLoading, isSuccess }] =
-    useEmployeeCreateMutation();
+  const [hodCreate, { isLoading, isSuccess }] = useHodCreateMutation();
 
   const submitHandler = (data) => {
     const formData = {
@@ -28,50 +27,27 @@ const AddEmployee = () => {
       dob: toISO(data.dob),
       joiningDate: toISO(data.joiningDate),
     };
-    employeeCreate(formData);
+    hodCreate(formData);
   };
 
-  const { formData, schema } = employeeFormData(
+  const { formData, schema } = hodFormData(
     department,
-    user?.role,
     { xs: 12, sm: 6 },
     "medium"
   );
 
-  const [defaultValues, setDefaultValues] = useState({
-    firstName: "",
-    lastName: "",
-    mobile: "",
-    email: "",
-    gender: "",
-    department: "",
-    dob: "",
-    joiningDate: "",
-    address: "",
-  });
-
-  useEffect(() => {
-    if (user) {
-      setDefaultValues({
-        ...defaultValues,
-        department: user.department,
-      });
-    }
-  }, [user]);
-
   return (
     <Box>
-      <AppHeader title="Add Employee" />
+      <AppHeader title="Add Hod" />
 
       <Paper sx={{ paddingY: 7, paddingX: 3, marginTop: 3 }}>
         <Stack spacing={5} paddingX={10}>
-          <Typography variant="h6">Create Employee</Typography>
+          <Typography variant="h6">Create Hod</Typography>
           <FormComponent
             data={formData}
             onSubmit={submitHandler}
             schema={schema}
             isSuccess={isSuccess}
-            defaultValues={defaultValues}
           >
             <Stack>
               <LoadingButton
@@ -84,7 +60,7 @@ const AddEmployee = () => {
                 type="submit"
                 sx={{ marginLeft: "auto" }}
               >
-                Create Employee
+                Create Hod
               </LoadingButton>
             </Stack>
           </FormComponent>
@@ -94,4 +70,4 @@ const AddEmployee = () => {
   );
 };
 
-export default AddEmployee;
+export default AddHod;

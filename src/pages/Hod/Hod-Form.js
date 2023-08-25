@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-const employeeFormData = (department, role, gridSize, inputSize) => {
+const hodFormData = (department, gridSize, inputSize) => {
   const schema = yup
     .object({
       firstName: yup.string().required("First name is required"),
@@ -83,7 +83,6 @@ const employeeFormData = (department, role, gridSize, inputSize) => {
       grid: gridSize,
       fullWidth: true,
       label: "Select department",
-      disabled: role === "HOD",
       options: department
         ? department.map((item) => ({ label: item.name, value: item._id }))
         : [],
@@ -119,4 +118,4 @@ const employeeFormData = (department, role, gridSize, inputSize) => {
   return { schema, formData };
 };
 
-export default employeeFormData;
+export default hodFormData;

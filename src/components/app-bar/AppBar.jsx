@@ -85,6 +85,32 @@ const drawerMenu = [
     roles: ["ADMIN", "HOD"],
   },
   {
+    title: "HOD",
+    icon: <PeopleIcon />,
+    isActive: false,
+    hasChildren: true,
+    collapseText: "HOD",
+    roles: ["ADMIN"],
+    children: [
+      {
+        title: "Add HOD",
+        icon: <PersonAddAltIcon />,
+        isActive: false,
+        parent: "HOD",
+        link: "/hods/add",
+        roles: ["ADMIN"],
+      },
+      {
+        title: "HOD List",
+        icon: <Groups2Icon />,
+        isActive: false,
+        parent: "EMPLOYEE",
+        link: "/hods",
+        roles: ["ADMIN"],
+      },
+    ],
+  },
+  {
     title: "Employee",
     icon: <PeopleIcon />,
     isActive: false,
@@ -116,7 +142,7 @@ const drawerMenu = [
     isActive: false,
     hasChildren: false,
     link: "/leaves/leave-types",
-    roles: ["ADMIN", "HOD"],
+    roles: ["ADMIN"],
   },
   {
     title: "Leave",
