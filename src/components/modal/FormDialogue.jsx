@@ -61,23 +61,26 @@ export default function FormDialog({
         <DialogContent>
           <DialogContentText>{modalDescription}</DialogContentText>
           <Grid container spacing={spacing ? spacing : 2}>
-            {data.map((item) => (
-              <Grid item {...item.grid}>
-                <Input
-                  key={item.name}
-                  errors={errors}
-                  name={item.name}
-                  register={register}
-                  variant={item.variant}
-                  size={item.size}
-                  inputType={item.inputType}
-                  fullWidth={item.fullWidth}
-                  label={item.label}
-                  control={control}
-                  options={item.options}
-                />
-              </Grid>
-            ))}
+            {data.map(
+              (item) =>
+                item.isVisible && (
+                  <Grid item {...item.grid}>
+                    <Input
+                      key={item.name}
+                      errors={errors}
+                      name={item.name}
+                      register={register}
+                      variant={item.variant}
+                      size={item.size}
+                      inputType={item.inputType}
+                      fullWidth={item.fullWidth}
+                      label={item.label}
+                      control={control}
+                      options={item.options}
+                    />
+                  </Grid>
+                )
+            )}
           </Grid>
         </DialogContent>
         <DialogActions sx={{ paddingY: 2, paddingX: 2 }}>

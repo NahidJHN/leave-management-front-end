@@ -4,9 +4,7 @@ import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import DrawerAppBar from "./components/app-bar/AppBar";
 import { Stack } from "@mui/material";
-import { Route, Routes, useLocation } from "react-router-dom";
-import Login from "./pages/Login/Login";
-import PublicRoutes from "./router/Public.route";
+import { useLocation } from "react-router-dom";
 import Router from "./router/Router";
 
 const withoutNavRoute = ["/auth/login", "/auth/register", "/not-found"];
@@ -15,8 +13,8 @@ export function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
+      <Link color="inherit" href="#">
+        Leave Management
       </Link>{" "}
       {new Date().getFullYear()}.
     </Typography>

@@ -41,24 +41,27 @@ export default function FormComponent({
       noValidate
     >
       <Grid container spacing={2}>
-        {data.map((item) => (
-          <Grid key={item.name} item {...item.grid}>
-            <Input
-              {...item}
-              label={item.label}
-              fullWidth={item.fullWidth}
-              key={item.name}
-              errors={errors}
-              name={item.name}
-              register={register}
-              variant={item.variant}
-              size={item.size}
-              inputType={item.inputType}
-              control={control}
-              options={item.options}
-            />
-          </Grid>
-        ))}
+        {data.map(
+          (item) =>
+            item.isVisible && (
+              <Grid key={item.name} item {...item.grid}>
+                <Input
+                  {...item}
+                  label={item.label}
+                  fullWidth={item.fullWidth}
+                  key={item.name}
+                  errors={errors}
+                  name={item.name}
+                  register={register}
+                  variant={item.variant}
+                  size={item.size}
+                  inputType={item.inputType}
+                  control={control}
+                  options={item.options}
+                />
+              </Grid>
+            )
+        )}
       </Grid>
       {children}
     </Box>

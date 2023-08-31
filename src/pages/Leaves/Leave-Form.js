@@ -1,6 +1,14 @@
 import * as yup from "yup";
 
-const leaveFormData = (leaveTypes, gridSize, inputSize, role) => {
+const leaveFormData = (
+  leaveTypes,
+  role,
+  isSelf,
+  editable,
+  leave,
+  gridSize,
+  inputSize
+) => {
   const schema = yup
     .object({
       leaveType: yup.string().required("Please select a leave type"),
@@ -16,7 +24,6 @@ const leaveFormData = (leaveTypes, gridSize, inputSize, role) => {
       note: yup.string().required("Select leave end date"),
     })
     .required();
-
   const formData = [
     {
       name: "firstName",
@@ -27,6 +34,7 @@ const leaveFormData = (leaveTypes, gridSize, inputSize, role) => {
       fullWidth: true,
       label: "First Name",
       disabled: true,
+      isVisible: true,
     },
     {
       name: "lastName",
@@ -37,6 +45,7 @@ const leaveFormData = (leaveTypes, gridSize, inputSize, role) => {
       fullWidth: true,
       label: "Last Name",
       disabled: true,
+      isVisible: true,
     },
 
     {
@@ -47,6 +56,8 @@ const leaveFormData = (leaveTypes, gridSize, inputSize, role) => {
       grid: { xs: 12 },
       fullWidth: true,
       label: "Select leave type",
+      isVisible: true,
+      disabled: !isSelf && leave,
       options: leaveTypes
         ? leaveTypes.map((item) => ({ label: item.name, value: item._id }))
         : [],
@@ -60,6 +71,7 @@ const leaveFormData = (leaveTypes, gridSize, inputSize, role) => {
       fullWidth: true,
       label: "Available Leaves",
       disabled: true,
+      isVisible: true,
     },
     {
       name: "startDate",
@@ -68,7 +80,9 @@ const leaveFormData = (leaveTypes, gridSize, inputSize, role) => {
       inputType: "date",
       grid: gridSize,
       fullWidth: true,
+      disabled: !isSelf && leave,
       label: "Start Date",
+      isVisible: true,
     },
     {
       name: "endDate",
@@ -77,7 +91,9 @@ const leaveFormData = (leaveTypes, gridSize, inputSize, role) => {
       inputType: "date",
       grid: gridSize,
       fullWidth: true,
+      disabled: !isSelf && leave,
       label: "End Date",
+      isVisible: true,
     },
     {
       name: "hodStatus",
@@ -87,6 +103,7 @@ const leaveFormData = (leaveTypes, gridSize, inputSize, role) => {
       grid: gridSize,
       fullWidth: true,
       label: "HOD Status",
+      isVisible: role === "HOD" && leave && !isSelf,
       disabled: role !== "HOD",
       options: [
         {
@@ -111,6 +128,7 @@ const leaveFormData = (leaveTypes, gridSize, inputSize, role) => {
       grid: gridSize,
       fullWidth: true,
       label: "Admin Status",
+      isVisible: role === "ADMIN",
       disabled: role !== "ADMIN",
       options: [
         {
@@ -136,6 +154,8 @@ const leaveFormData = (leaveTypes, gridSize, inputSize, role) => {
       fullWidth: true,
       label: "Reason for leave",
       minRows: 4,
+      disabled: !isSelf && leave,
+      isVisible: true,
     },
   ];
   return { schema, formData };

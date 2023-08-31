@@ -11,17 +11,34 @@ import { useGetLeaveTypesQuery } from "../../redux/services/leave-type.service";
 import {
   useGetLeavesQuery,
   useLeaveCreateMutation,
+  useLeaveUpdateMutation,
 } from "../../redux/services/leave.service";
 import leaveFormData from "./Leave-Form";
 import { useGetEmployeeQuery } from "../../redux/services/employee.service";
+import { useGetHodQuery } from "../../redux/services/hod.service";
 import { useSearchParams } from "react-router-dom";
+
+const makeDefaultObject = (defaultData, leave) => {
+  return {
+    firstName: defaultData?.firstName,
+    lastName: defaultData?.lastName,
+    availableLeaves: defaultData?.availableLeaves,
+    leaveType: leave?.leaveType,
+    startDate: dayjs(leave?.startDate).format("YYYY-MM-DD"),
+    endDate: dayjs(leave?.endDate).format("YYYY-MM-DD"),
+    hodStatus: leave?.hodStatus || "PENDING",
+    adminStatus: leave?.adminStatus || "PENDING",
+    note: leave?.note,
+  };
+};
 
 const ApplyLeave = () => {
   const { user } = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const leaveId = searchParams.get("leaveid");
 
+  //redux hooks
   const { data: leave } = useGetLeavesQuery(user?.admin, {
     skip: !user,
     selectFromResult: ({ data }) => {
@@ -38,65 +55,115 @@ const ApplyLeave = () => {
     skip: !user,
   });
 
+  const { data: hods } = useGetHodQuery(user?.admin, {
+    skip: !user,
+  });
+
   const [
     leaveCreate,
     { isLoading: applyLeaveLoading, isSuccess: applyLeaveSuccess },
   ] = useLeaveCreateMutation();
 
-  const submitHandler = (data) => {
-    data.admin = user?.admin;
-    data.userId = user?.id;
-    const employee = employees.find(
-      (employee) => employee.user._id === user?._id
-    );
-    const numOfDay = dayjs(data.endDate).diff(dayjs(data.startDate), "day");
-    leaveCreate({
-      ...data,
-      startDate: data.startDate.toISOString(),
-      employee: employee?._id,
-      numOfDay,
-      department: employee.department,
-    });
-  };
+  const [
+    leaveUpdate,
+    { isLoading: updateLeaveLoading, isSuccess: updateLeaveSuccess },
+  ] = useLeaveUpdateMutation();
 
-  const { formData, schema } = leaveFormData(
-    leaveTypes,
-    { xs: 12, sm: 6 },
-    "medium"
-  );
+  //local states
 
   const [defaultValues, setDefaultValues] = useState({
     firstName: "",
     lastName: "",
     availableLeaves: "",
+    note: "",
   });
 
-  useEffect(() => {
-    if (leaveId) {
-      const employee = employees?.find(
-        (employee) => employee._id === leave?.employee
+  const [isSelfLeave, setSelfLeave] = useState(false);
+  const [editable, setEditable] = useState(false);
+
+  const submitHandler = (data) => {
+    data.admin = user?.admin;
+    data.user = user?._id;
+    console.log(user);
+    if (user.role === "EMPLOYEE") {
+      const employee = employees.find(
+        (employee) => employee.user._id === user?._id
       );
-      if (employee && leave) {
-        setDefaultValues({
-          firstName: employee?.firstName,
-          lastName: employee?.lastName,
-          availableLeaves: employee?.availableLeaves,
-          leaveType: leave?.leaveType,
-          startDate: dayjs(leave?.startDate).format("YYYY-MM-DD"),
-          endDate: dayjs(leave?.endDate).format("YYYY-MM-DD"),
-          hodStatus: leave?.hodStatus || "PENDING",
-          adminStatus: leave?.adminStatus || "PENDING",
-          note: leave?.note,
-        });
-      }
-    } else {
-      setDefaultValues({
-        firstName: user?.firstName,
-        lastName: user?.lastName,
-        availableLeaves: user?.availableLeaves,
+      const numOfDay = dayjs(data.endDate).diff(dayjs(data.startDate), "day");
+      leaveCreate({
+        ...data,
+        startDate: data.startDate.toISOString(),
+        employee: employee?._id,
+        numOfDay,
+        department: employee.department,
       });
     }
-  }, [employees, leave]);
+    if (user.role === "HOD") {
+      const hod = hods.find((hod) => hod.user._id === user?._id);
+      const numOfDay = dayjs(data.endDate).diff(dayjs(data.startDate), "day");
+      leaveCreate({
+        ...data,
+        startDate: data.startDate.toISOString(),
+        hod: hod?._id,
+        numOfDay,
+        department: hod.department,
+        hodStatus: "APPROVED",
+      });
+    }
+  };
+
+  const updateLeave = (data) => {
+    data = { ...leave, ...data };
+    leaveUpdate({ id: data._id, body: data });
+  };
+
+  const { formData, schema } = leaveFormData(
+    leaveTypes,
+    user?.role,
+    isSelfLeave,
+    editable,
+    leave,
+    { xs: 12, sm: 6 },
+    "medium"
+  );
+
+  useEffect(() => {
+    if (leave) {
+      if (leave?.employee) {
+        const employee = employees?.find(
+          (employee) => employee._id === leave?.employee
+        );
+        if (employee) {
+          const formattedValues = makeDefaultObject(employee, leave);
+          setDefaultValues(formattedValues);
+          if (employee.user._id === user._id) {
+            setSelfLeave(true);
+          }
+          if (user.role === "HOD" || user.role === "ADMIN") {
+            setEditable(true);
+          }
+        }
+        return;
+      }
+
+      if (leave?.hod) {
+        const hod = hods?.find((hod) => hod._id === leave?.hod);
+        if (hod) {
+          const formattedValues = makeDefaultObject(hod, leave);
+          setDefaultValues(formattedValues);
+          if (hod.user._id === user._id) {
+            setSelfLeave(true);
+          }
+        }
+        return;
+      }
+    }
+    setDefaultValues({
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      availableLeaves: user?.availableLeaves,
+    });
+  }, [employees, hods, leave]);
 
   return (
     <Box>
@@ -107,16 +174,16 @@ const ApplyLeave = () => {
           <Typography variant="h6">Apply Leave</Typography>
           <FormComponent
             data={formData}
-            onSubmit={submitHandler}
+            onSubmit={leave ? updateLeave : submitHandler}
             schema={schema}
-            isSuccess={applyLeaveSuccess}
+            isSuccess={applyLeaveSuccess || updateLeaveSuccess}
             defaultValues={defaultValues}
           >
             <Stack marginTop={2}>
               <LoadingButton
                 endIcon={<SendIcon />}
                 loadingPosition="end"
-                loading={applyLeaveLoading}
+                loading={applyLeaveLoading || updateLeaveLoading}
                 variant="contained"
                 disableRipple
                 color="primary"

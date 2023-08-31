@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Box, Paper, Stack } from "@mui/material";
+import { Box, Paper, Stack, Tooltip } from "@mui/material";
 import AppHeader from "../../components/app-header/AppHeader";
 import DataTable from "../../components/table/Table";
 
 import {
   useGetLeavesQuery,
-  useLeaveUpdateMutation,
+  useLeaveDeleteMutation,
 } from "../../redux/services/leave.service";
 
 import { useGetLeaveTypesQuery } from "../../redux/services/leave-type.service";
@@ -16,25 +16,23 @@ import useAuth from "../../hooks/useAuth";
 import ChipComponent from "../../components/Badge/Chip";
 import dayjs from "dayjs";
 import { Link } from "react-router-dom";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import DeleteConfirmation from "../../components/modal/DeleteConfirmation";
+import { useGetHodQuery } from "../../redux/services/hod.service";
 
 const Leave = ({ filterTerms }) => {
-  const [open, setOpen] = useState(false);
-  const [activeId, setActiveId] = useState("");
-  const [defaultValues, setDefaultValues] = useState({});
-
-  const handleModal = () => {
-    setOpen(!open);
-    setDefaultValues({});
-    setActiveId("");
-  };
-
+  //auth hook
   const { user } = useAuth();
+
+  //rkt hooks
   const { data: leaves } = useGetLeavesQuery(user?.admin, {
     skip: !user,
     selectFromResult: ({ data }) => {
       if (filterTerms === "all") return { data };
+      const getStatusKey = user.role === "ADMIN" ? "adminStatus" : "hodStatus";
       const filteredData = data?.filter(
-        (item) => item.adminStatus === filterTerms
+        (item) => item[getStatusKey] === filterTerms
       );
       return { data: filteredData };
     },
@@ -44,21 +42,26 @@ const Leave = ({ filterTerms }) => {
     skip: !user,
   });
 
+  const { data: hods } = useGetHodQuery(user?.admin, {
+    skip: !user,
+  });
+
+  const [leaveDelete, { isLoading: leaveDeleteLoading }] =
+    useLeaveDeleteMutation();
+
   const { data: employees } = useGetEmployeeQuery(user?.admin, { skip: !user });
 
-  const [updateLeave, { isLoading: updateLeaveLoading }] =
-    useLeaveUpdateMutation();
+  //local state hooks
+  const [openDeleteModal, setDeleteModal] = useState(false);
+  const [activeId, setActiveId] = useState("");
 
-  //edit state
-
-  const submitHandler = async (data) => {};
-
-  const editHandler = (id) => {
-    setOpen(true);
+  const onOpenModal = (id) => () => {
     setActiveId(id);
+    setDeleteModal(true);
   };
-  const deleteHandler = (data) => {
-    console.log(data);
+
+  const onDeleteSubmit = () => {
+    leaveDelete(activeId);
   };
 
   const columns = [
@@ -66,9 +69,24 @@ const Leave = ({ filterTerms }) => {
       field: "employee",
       headerName: "Employee",
       width: 150,
-      valueGetter: ({ value }) => {
-        const employee = employees?.find((employee) => employee._id === value);
-        return `${employee?.firstName} ${employee?.lastName}`;
+      valueGetter: ({ value, row }) => {
+        if (row.employee) {
+          const employee = employees?.find(
+            (employee) => employee._id === value
+          );
+          if (employee) {
+            return `${employee?.firstName} ${employee?.lastName}`;
+          }
+        }
+        if (row.hod) {
+          const hod = hods?.find((hod) => hod._id === row.hod);
+          const isSelf = hod?.user._id === user._id;
+          if (hod) {
+            return `${hod?.firstName} ${hod?.lastName} ${isSelf && "(Self)"}`;
+          }
+        }
+
+        return "";
       },
     },
     {
@@ -126,8 +144,31 @@ const Leave = ({ filterTerms }) => {
       field: "_id",
       headerName: "Action",
       width: 200,
-      renderCell: ({ value }) => {
-        return <Link to={`/leaves/apply?leaveid=${value}`}>View</Link>;
+      renderCell: ({ value, row }) => {
+        return (
+          <Stack
+            direction="row"
+            gap={2}
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Link to={`/leaves/apply?leaveid=${value}`}>
+              <Tooltip title="View" arrow>
+                <VisibilityIcon sx={{ color: "white" }} />
+              </Tooltip>
+            </Link>
+            {row.hodStatus === "PENDING" &&
+              row.adminStatus === "PENDING" &&
+              value.user === user._id && (
+                <Tooltip title="Delete" arrow>
+                  <DeleteForeverIcon
+                    sx={{ cursor: "pointer" }}
+                    onClick={onOpenModal(value)}
+                  />
+                </Tooltip>
+              )}
+          </Stack>
+        );
       },
     },
   ];
@@ -144,11 +185,16 @@ const Leave = ({ filterTerms }) => {
             handleSelection={() => {}}
             key="_id"
             hasAction={false}
-            deleteHandler={deleteHandler}
-            editHandler={editHandler}
           />
         </Paper>
       </Stack>
+      <DeleteConfirmation
+        open={openDeleteModal}
+        loading={leaveDeleteLoading}
+        onSubmit={onDeleteSubmit}
+        title="Do you want to delete this leave"
+        description="If you delete the leave once, you can't restore it again"
+      />
     </Box>
   );
 };

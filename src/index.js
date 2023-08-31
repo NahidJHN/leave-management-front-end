@@ -11,6 +11,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { store } from "./redux/store";
 import App from "./App";
+import { SnackbarProvider } from "notistack";
 
 const rootElement = document.getElementById("root");
 const root = ReactDOM.createRoot(rootElement);
@@ -29,7 +30,9 @@ root.render(
               },
             }}
           />
-          <App />
+          <SnackbarProvider autoHideDuration={5000} maxSnack={3}>
+            <App />
+          </SnackbarProvider>
         </BrowserRouter>
       </LocalizationProvider>
     </Provider>

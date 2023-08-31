@@ -36,7 +36,7 @@ export const leaveApi = api.injectEndpoints({
         method: "PATCH",
         body,
       }),
-      async onQueryStarted({ setOpen }, { queryFulfilled, dispatch }) {
+      async onQueryStarted(_args, { queryFulfilled, dispatch }) {
         try {
           const {
             data: { data },
@@ -47,7 +47,27 @@ export const leaveApi = api.injectEndpoints({
               draft[index] = data;
             })
           );
-          setOpen(false);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
+    leaveDelete: build.mutation({
+      query: (id) => ({
+        url: "/leaves/" + id,
+        method: "DELETE",
+      }),
+      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+        console.log(arg);
+        try {
+          const {
+            data: { data },
+          } = await queryFulfilled;
+          dispatch(
+            api.util.updateQueryData("getLeaves", data.admin, (draft) => {
+              draft.filter((item) => item._id !== arg);
+            })
+          );
         } catch (error) {
           console.log(error);
         }
@@ -60,4 +80,5 @@ export const {
   useGetLeavesQuery,
   useLeaveCreateMutation,
   useLeaveUpdateMutation,
+  useLeaveDeleteMutation,
 } = leaveApi;
