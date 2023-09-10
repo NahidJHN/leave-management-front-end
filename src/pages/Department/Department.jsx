@@ -10,10 +10,13 @@ import {
   useDepartmentCreateMutation,
   useDepartmentUpdateMutation,
   useGetDepartmentQuery,
+  useDepartmentDeleteMutation,
 } from "../../redux/services/department.service";
 import useAuth from "../../hooks/useAuth";
 import { LoadingButton } from "@mui/lab";
 import { departmentFormData } from "./Department-Form";
+import DeleteConfirmation from "../../components/modal/DeleteConfirmation";
+import UnAuthorized from "../../components/security/unAuthorized";
 
 const Department = () => {
   const [open, setOpen] = useState(false);
@@ -25,6 +28,8 @@ const Department = () => {
     alias: "",
   });
 
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+
   const handleModal = () => {
     setOpen(!open);
     setIsUpdate(false);
@@ -32,6 +37,7 @@ const Department = () => {
     setActiveId("");
   };
   const { user } = useAuth();
+
   const { data: departments } = useGetDepartmentQuery(user?.admin, {
     skip: !user,
   });
@@ -40,6 +46,9 @@ const Department = () => {
 
   const [updateDepartment, { isLoading: updateDepartmentLoading }] =
     useDepartmentUpdateMutation();
+
+  const [deleteDepartment, { isLoading: deleteDepartmentLoading }] =
+    useDepartmentDeleteMutation();
 
   const submitHandler = (data) => {
     data.admin = user.admin;
@@ -62,10 +71,14 @@ const Department = () => {
     });
   };
 
-  const deleteHandler = (data) => {
-    console.log(data);
+  const deleteHandler = (id) => {
+    setOpenDeleteModal(true);
+    setActiveId(id);
   };
 
+  const onDeleteSubmit = () => {
+    deleteDepartment({ id: activeId, setOpenDeleteModal });
+  };
   const { formData, schema } = departmentFormData();
 
   const columns = [
@@ -78,6 +91,15 @@ const Department = () => {
       width: 200,
     },
   ];
+
+  if (user?.role === "EMPLOYEE" || user?.role === "HOD") {
+    return (
+      <UnAuthorized
+        title="Forbidden"
+        description="You are not permitted to access this page"
+      />
+    );
+  }
 
   return (
     <Box>
@@ -143,6 +165,14 @@ const Department = () => {
         schema={schema}
         loading={updateDepartmentLoading}
         defaultValues={defaultValues}
+      />
+      <DeleteConfirmation
+        open={openDeleteModal}
+        loading={deleteDepartmentLoading}
+        onSubmit={onDeleteSubmit}
+        handleClose={() => setOpenDeleteModal(false)}
+        title="Do you want to delete this department"
+        description="If you delete the department once, you can't restore it again"
       />
     </Box>
   );

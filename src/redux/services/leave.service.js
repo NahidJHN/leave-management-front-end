@@ -57,17 +57,17 @@ export const leaveApi = api.injectEndpoints({
         url: "/leaves/" + id,
         method: "DELETE",
       }),
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-        console.log(arg);
+      async onQueryStarted({ setDeleteModal }, { queryFulfilled, dispatch }) {
         try {
           const {
             data: { data },
           } = await queryFulfilled;
           dispatch(
             api.util.updateQueryData("getLeaves", data.admin, (draft) => {
-              draft.filter((item) => item._id !== arg);
+              draft.filter((item) => item._id !== data._id);
             })
           );
+          setDeleteModal(false);
         } catch (error) {
           console.log(error);
         }

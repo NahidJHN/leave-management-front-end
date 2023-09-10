@@ -24,6 +24,7 @@ const hodFormData = (department, gridSize, inputSize) => {
       grid: gridSize,
       fullWidth: true,
       label: "First name",
+      isVisible: true,
     },
     {
       name: "lastName",
@@ -33,6 +34,7 @@ const hodFormData = (department, gridSize, inputSize) => {
       grid: gridSize,
       fullWidth: true,
       label: "Last name",
+      isVisible: true,
     },
     {
       name: "mobile",
@@ -42,6 +44,7 @@ const hodFormData = (department, gridSize, inputSize) => {
       grid: gridSize,
       fullWidth: true,
       label: "Enter mobile",
+      isVisible: true,
     },
     {
       name: "email",
@@ -51,6 +54,7 @@ const hodFormData = (department, gridSize, inputSize) => {
       grid: gridSize,
       fullWidth: true,
       label: "Enter Email",
+      isVisible: true,
     },
     {
       name: "gender",
@@ -60,6 +64,7 @@ const hodFormData = (department, gridSize, inputSize) => {
       grid: gridSize,
       fullWidth: true,
       label: "Select Gender",
+      isVisible: true,
       options: [
         {
           label: "Male",
@@ -83,6 +88,7 @@ const hodFormData = (department, gridSize, inputSize) => {
       grid: gridSize,
       fullWidth: true,
       label: "Select department",
+      isVisible: true,
       options: department
         ? department.map((item) => ({ label: item.name, value: item._id }))
         : [],
@@ -95,6 +101,7 @@ const hodFormData = (department, gridSize, inputSize) => {
       grid: gridSize,
       fullWidth: true,
       label: "Date of birth",
+      isVisible: true,
     },
     {
       name: "joiningDate",
@@ -104,6 +111,7 @@ const hodFormData = (department, gridSize, inputSize) => {
       grid: gridSize,
       fullWidth: true,
       label: "Joining date",
+      isVisible: true,
     },
     {
       name: "address",
@@ -113,6 +121,7 @@ const hodFormData = (department, gridSize, inputSize) => {
       grid: gridSize,
       fullWidth: true,
       label: "address",
+      isVisible: true,
     },
   ];
   return { schema, formData };

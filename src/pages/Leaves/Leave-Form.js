@@ -1,10 +1,10 @@
+import dayjs from "dayjs";
 import * as yup from "yup";
 
 const leaveFormData = (
   leaveTypes,
   role,
   isSelf,
-  editable,
   leave,
   gridSize,
   inputSize
@@ -24,6 +24,24 @@ const leaveFormData = (
       note: yup.string().required("Select leave end date"),
     })
     .required();
+
+  const isDisabled = (role, leave) => {
+    const startDate = dayjs(leave?.startDate);
+    const currentDate = dayjs();
+
+    const diff = startDate.diff(currentDate, "day");
+    if (diff <= 0) {
+      return true;
+    }
+    if (
+      (!isSelf && leave) ||
+      (role === "HOD" && leave?.adminStatus !== "PENDING") ||
+      (role === "EMPLOYEE" && leave?.hodStatus !== "PENDING")
+    ) {
+      return true;
+    }
+  };
+
   const formData = [
     {
       name: "firstName",
@@ -57,7 +75,7 @@ const leaveFormData = (
       fullWidth: true,
       label: "Select leave type",
       isVisible: true,
-      disabled: !isSelf && leave,
+      disabled: isDisabled(role, leave),
       options: leaveTypes
         ? leaveTypes.map((item) => ({ label: item.name, value: item._id }))
         : [],
@@ -80,7 +98,7 @@ const leaveFormData = (
       inputType: "date",
       grid: gridSize,
       fullWidth: true,
-      disabled: !isSelf && leave,
+      disabled: isDisabled(role, leave),
       label: "Start Date",
       isVisible: true,
     },
@@ -91,7 +109,7 @@ const leaveFormData = (
       inputType: "date",
       grid: gridSize,
       fullWidth: true,
-      disabled: !isSelf && leave,
+      disabled: isDisabled(role, leave),
       label: "End Date",
       isVisible: true,
     },
@@ -104,7 +122,7 @@ const leaveFormData = (
       fullWidth: true,
       label: "HOD Status",
       isVisible: role === "HOD" && leave && !isSelf,
-      disabled: role !== "HOD",
+      disabled: role !== "HOD" || leave?.adminStatus !== "PENDING",
       options: [
         {
           label: "Pending",
@@ -156,6 +174,30 @@ const leaveFormData = (
       minRows: 4,
       disabled: !isSelf && leave,
       isVisible: true,
+    },
+    {
+      name: "hodRemark",
+      variant: "outlined",
+      size: inputSize,
+      inputType: "textarea",
+      grid: gridSize,
+      fullWidth: true,
+      label: "HOD remark",
+      minRows: 4,
+      disabled: (role !== "HOD" && !isSelf) || leave?.adminStatus !== "PENDING",
+      isVisible: role === "HOD" || role === "ADMIN",
+    },
+    {
+      name: "adminRemark",
+      variant: "outlined",
+      size: inputSize,
+      inputType: "textarea",
+      grid: gridSize,
+      fullWidth: true,
+      label: "Admin Remark",
+      minRows: 4,
+      disabled: role !== "ADMIN",
+      isVisible: role === "ADMIN",
     },
   ];
   return { schema, formData };

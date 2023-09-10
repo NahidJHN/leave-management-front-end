@@ -9,7 +9,6 @@ import LeaveType from "../pages/Leave-Types/Leave-Types";
 import PublicRoutes from "./Public.route";
 import { Stack, Typography } from "@mui/material";
 import SignIn from "../pages/Login/Login";
-import Leaves from "../pages/Leaves/Leaves";
 import AllLeaves from "../pages/Leaves/All-Leaves";
 import PendingLeaves from "../pages/Leaves/Pending-Leaves";
 import ApprovedLeaves from "../pages/Leaves/Approved-Leaves";
@@ -17,6 +16,7 @@ import RejectedLeaves from "../pages/Leaves/Rejected-Leaves";
 import ApplyLeave from "../pages/Leaves/Apply-Leave";
 import AddHod from "../pages/Hod/AddHod";
 import Hod from "../pages/Hod/Hod";
+import LeaveHistory from "../pages/Leaves/Leave-History";
 
 const Router = () => {
   return (
@@ -40,6 +40,7 @@ const Router = () => {
           <Route path="approved" element={<ApprovedLeaves />} />
           <Route path="apply" element={<ApplyLeave />} />
           <Route path="rejected" element={<RejectedLeaves />} />
+          <Route path="history" element={<LeaveHistory />} />
         </Route>
       </Route>
       <Route element={<PublicRoutes />}>

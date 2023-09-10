@@ -5,27 +5,24 @@ import DataTable from "../../components/table/Table";
 import FormDialog from "../../components/modal/FormDialogue";
 import {
   useEmployeeUpdateMutation,
-  useGetEmployeeQuery,
+  useGetEmployeesQuery,
+  useEmployeeDeleteMutation,
 } from "../../redux/services/employee.service";
 import { useGetDepartmentQuery } from "../../redux/services/department.service";
 import useAuth from "../../hooks/useAuth";
 import employeeFormData from "./Employee-Form";
 import { toISO } from "../../utils/dateFormatter";
 import { Link } from "react-router-dom";
+import DeleteConfirmation from "../../components/modal/DeleteConfirmation";
 
 const Employee = () => {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState("");
   const [defaultValues, setDefaultValues] = useState({});
-
-  const handleModal = () => {
-    setOpen(!open);
-    setDefaultValues({});
-    setActiveId("");
-  };
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const { user } = useAuth();
-  const { data: employees } = useGetEmployeeQuery(user?.admin, {
+  const { data: employees } = useGetEmployeesQuery(user?.admin, {
     skip: !user,
   });
 
@@ -35,6 +32,9 @@ const Employee = () => {
 
   const [updateEmployee, { isLoading: updateEmployeeLoading }] =
     useEmployeeUpdateMutation();
+
+  const [deleteEmployee, { isLoading: deleteEmployeeLoading }] =
+    useEmployeeDeleteMutation();
 
   //edit state
 
@@ -65,9 +65,6 @@ const Employee = () => {
       joiningDate: employee.joiningDate,
       address: employee.address,
     });
-  };
-  const deleteHandler = (data) => {
-    console.log(data);
   };
 
   const columns = [
@@ -113,6 +110,21 @@ const Employee = () => {
     { xs: 12, sm: 6 },
     "small"
   );
+  const onDeleteSubmit = () => {
+    deleteEmployee({ id: activeId, setOpenDeleteModal });
+  };
+
+  //handle modal
+  const handleModal = () => {
+    setOpen(!open);
+    setDefaultValues({});
+    setActiveId("");
+  };
+
+  const deleteHandler = (id) => {
+    setOpenDeleteModal(true);
+    setActiveId(id);
+  };
 
   return (
     <Box>
@@ -141,6 +153,14 @@ const Employee = () => {
         loading={updateEmployeeLoading}
         defaultValues={defaultValues}
         spacing={{ xs: 2, md: 4 }}
+      />
+      <DeleteConfirmation
+        open={openDeleteModal}
+        loading={deleteEmployeeLoading}
+        onSubmit={onDeleteSubmit}
+        handleClose={() => setOpenDeleteModal(false)}
+        title="Do you want to delete this Employee?"
+        description="If you delete the employee once, you can't restore it again"
       />
     </Box>
   );

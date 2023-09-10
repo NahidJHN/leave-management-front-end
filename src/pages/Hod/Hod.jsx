@@ -5,27 +5,23 @@ import DataTable from "../../components/table/Table";
 import FormDialog from "../../components/modal/FormDialogue";
 import {
   useHodUpdateMutation,
-  useGetHodQuery,
+  useGetHodsQuery,
+  useHodDeleteMutation,
 } from "../../redux/services/hod.service";
 import { useGetDepartmentQuery } from "../../redux/services/department.service";
 import useAuth from "../../hooks/useAuth";
 import hodFormData from "./Hod-Form";
 import { toISO } from "../../utils/dateFormatter";
-import { Link } from "react-router-dom";
+import DeleteConfirmation from "../../components/modal/DeleteConfirmation";
 
 const Hod = () => {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState("");
   const [defaultValues, setDefaultValues] = useState({});
-
-  const handleModal = () => {
-    setOpen(!open);
-    setDefaultValues({});
-    setActiveId("");
-  };
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const { user } = useAuth();
-  const { data: hods } = useGetHodQuery(user?.admin, {
+  const { data: hods } = useGetHodsQuery(user?.admin, {
     skip: !user,
   });
 
@@ -34,6 +30,8 @@ const Hod = () => {
   });
 
   const [updateHod, { isLoading: updateHodLoading }] = useHodUpdateMutation();
+
+  const [deleteHod, { isLoading: deleteHodLoading }] = useHodDeleteMutation();
 
   //edit state
 
@@ -65,10 +63,23 @@ const Hod = () => {
       address: hod.address,
     });
   };
-  const deleteHandler = (data) => {
-    console.log(data);
+
+  const onDeleteSubmit = () => {
+    deleteHod({ id: activeId, setOpenDeleteModal });
   };
 
+  //handle modal
+  const handleModal = () => {
+    setOpen(!open);
+    setDefaultValues({});
+  };
+
+  const handleDeleteModal = (id) => {
+    setOpenDeleteModal(true);
+    setActiveId(id);
+  };
+
+  //columns and forms
   const columns = [
     {
       field: "name",
@@ -125,7 +136,7 @@ const Hod = () => {
             handleSelection={() => {}}
             key="_id"
             hasAction={true}
-            deleteHandler={deleteHandler}
+            deleteHandler={handleDeleteModal}
             editHandler={editHandler}
           />
         </Paper>
@@ -140,6 +151,14 @@ const Hod = () => {
         loading={updateHodLoading}
         defaultValues={defaultValues}
         spacing={{ xs: 2, md: 4 }}
+      />
+      <DeleteConfirmation
+        open={openDeleteModal}
+        loading={deleteHodLoading}
+        onSubmit={onDeleteSubmit}
+        handleClose={() => setOpenDeleteModal(false)}
+        title="Do you want to delete this HOD?"
+        description="If you delete the hod once, you can't restore it again"
       />
     </Box>
   );

@@ -2,7 +2,7 @@ import { api } from "../base-query";
 
 export const hodApi = api.injectEndpoints({
   endpoints: (build) => ({
-    getHod: build.query({
+    getHods: build.query({
       query: (id) => "/hods/" + id,
       transformResponse(data) {
         return data.data;
@@ -21,7 +21,7 @@ export const hodApi = api.injectEndpoints({
             data: { data },
           } = await queryFulfilled;
           dispatch(
-            api.util.updateQueryData("getHod", data.admin, (draft) => {
+            api.util.updateQueryData("getHods", data.admin, (draft) => {
               draft.unshift(data);
             })
           );
@@ -42,7 +42,7 @@ export const hodApi = api.injectEndpoints({
             data: { data },
           } = await queryFulfilled;
           dispatch(
-            api.util.updateQueryData("getHod", data.admin, (draft) => {
+            api.util.updateQueryData("getHods", data.admin, (draft) => {
               const index = draft.findIndex((item) => item._id === data._id);
               draft[index] = data;
             })
@@ -53,8 +53,36 @@ export const hodApi = api.injectEndpoints({
         }
       },
     }),
+    hodDelete: build.mutation({
+      query: (body) => ({
+        url: "/hods/" + body.id,
+        method: "DELETE",
+      }),
+      async onQueryStarted(
+        { setOpenDeleteModal },
+        { queryFulfilled, dispatch }
+      ) {
+        try {
+          const {
+            data: { data },
+          } = await queryFulfilled;
+          dispatch(
+            api.util.updateQueryData("getHods", data.admin, (draft) => {
+              draft.filter((item) => item._id !== data._id);
+            })
+          );
+          setOpenDeleteModal(false);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
   }),
 });
 
-export const { useGetHodQuery, useHodCreateMutation, useHodUpdateMutation } =
-  hodApi;
+export const {
+  useGetHodsQuery,
+  useHodCreateMutation,
+  useHodUpdateMutation,
+  useHodDeleteMutation,
+} = hodApi;

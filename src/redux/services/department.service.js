@@ -52,6 +52,30 @@ export const departmentApi = api.injectEndpoints({
         }
       },
     }),
+    departmentDelete: build.mutation({
+      query: (body) => ({
+        url: "/departments/" + body.id,
+        method: "DELETE",
+      }),
+      async onQueryStarted(
+        { setOpenDeleteModal },
+        { queryFulfilled, dispatch }
+      ) {
+        try {
+          const {
+            data: { data },
+          } = await queryFulfilled;
+          dispatch(
+            api.util.updateQueryData("getDepartment", data.admin, (draft) => {
+              draft.filter((item) => item._id !== data._id);
+            })
+          );
+          setOpenDeleteModal(false);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
   }),
 });
 
@@ -59,4 +83,5 @@ export const {
   useGetDepartmentQuery,
   useDepartmentCreateMutation,
   useDepartmentUpdateMutation,
+  useDepartmentDeleteMutation,
 } = departmentApi;

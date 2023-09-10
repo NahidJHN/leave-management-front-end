@@ -6,11 +6,13 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:9090/api/v1",
     mode: "cors",
+
     prepareHeaders(headers, { getState }) {
       const accessToken = getState().auth.accessToken;
       if (accessToken) headers.set("Authorization", "Bearer " + accessToken);
       return headers;
     },
   }),
+  tagTypes: ["Employees"],
   endpoints: () => ({}),
 });

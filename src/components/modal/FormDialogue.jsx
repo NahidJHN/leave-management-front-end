@@ -62,11 +62,10 @@ export default function FormDialog({
           <DialogContentText>{modalDescription}</DialogContentText>
           <Grid container spacing={spacing ? spacing : 2}>
             {data.map(
-              (item) =>
+              (item, index) =>
                 item.isVisible && (
-                  <Grid item {...item.grid}>
+                  <Grid item {...item.grid} key={item.name}>
                     <Input
-                      key={item.name}
                       errors={errors}
                       name={item.name}
                       register={register}

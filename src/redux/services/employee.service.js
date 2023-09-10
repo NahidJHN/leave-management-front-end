@@ -2,7 +2,7 @@ import { api } from "../base-query";
 
 export const employeeApi = api.injectEndpoints({
   endpoints: (build) => ({
-    getEmployee: build.query({
+    getEmployees: build.query({
       query: (id) => "/employees/" + id,
       transformResponse(data) {
         return data.data;
@@ -21,7 +21,7 @@ export const employeeApi = api.injectEndpoints({
             data: { data },
           } = await queryFulfilled;
           dispatch(
-            api.util.updateQueryData("getEmployee", data.admin, (draft) => {
+            api.util.updateQueryData("getEmployees", data.admin, (draft) => {
               draft.unshift(data);
             })
           );
@@ -42,7 +42,7 @@ export const employeeApi = api.injectEndpoints({
             data: { data },
           } = await queryFulfilled;
           dispatch(
-            api.util.updateQueryData("getEmployee", data.admin, (draft) => {
+            api.util.updateQueryData("getEmployees", data.admin, (draft) => {
               const index = draft.findIndex((item) => item._id === data._id);
               draft[index] = data;
             })
@@ -53,11 +53,36 @@ export const employeeApi = api.injectEndpoints({
         }
       },
     }),
+    employeeDelete: build.mutation({
+      query: (body) => ({
+        url: "/employees/" + body.id,
+        method: "DELETE",
+      }),
+      async onQueryStarted(
+        { setOpenDeleteModal },
+        { queryFulfilled, dispatch }
+      ) {
+        try {
+          const {
+            data: { data },
+          } = await queryFulfilled;
+          dispatch(
+            api.util.updateQueryData("getEmployees", data.admin, (draft) => {
+              draft.filter((item) => item._id !== data._id);
+            })
+          );
+          setOpenDeleteModal(false);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
   }),
 });
 
 export const {
-  useGetEmployeeQuery,
+  useGetEmployeesQuery,
   useEmployeeCreateMutation,
   useEmployeeUpdateMutation,
+  useEmployeeDeleteMutation,
 } = employeeApi;

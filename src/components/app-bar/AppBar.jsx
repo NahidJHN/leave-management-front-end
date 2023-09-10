@@ -63,7 +63,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
@@ -82,7 +81,7 @@ const drawerMenu = [
     isActive: false,
     hasChildren: false,
     link: "/department",
-    roles: ["ADMIN", "HOD"],
+    roles: ["ADMIN"],
   },
   {
     title: "HOD",
@@ -395,7 +394,7 @@ export default function DrawerAppBar({ children }) {
                                   <>
                                     {checkChildRole && (
                                       <Link
-                                        key={child.link}
+                                        key={item.title}
                                         to={child.link || ""}
                                         style={{ textDecoration: "none" }}
                                       >

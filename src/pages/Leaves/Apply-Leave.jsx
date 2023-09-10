@@ -14,9 +14,10 @@ import {
   useLeaveUpdateMutation,
 } from "../../redux/services/leave.service";
 import leaveFormData from "./Leave-Form";
-import { useGetEmployeeQuery } from "../../redux/services/employee.service";
-import { useGetHodQuery } from "../../redux/services/hod.service";
+import { useGetEmployeesQuery } from "../../redux/services/employee.service";
+import { useGetHodsQuery } from "../../redux/services/hod.service";
 import { useSearchParams } from "react-router-dom";
+import UnAuthorized from "../../components/security/unAuthorized";
 
 const makeDefaultObject = (defaultData, leave) => {
   return {
@@ -51,11 +52,11 @@ const ApplyLeave = () => {
     skip: !user,
   });
 
-  const { data: employees } = useGetEmployeeQuery(user?.admin, {
+  const { data: employees } = useGetEmployeesQuery(user?.admin, {
     skip: !user,
   });
 
-  const { data: hods } = useGetHodQuery(user?.admin, {
+  const { data: hods } = useGetHodsQuery(user?.admin, {
     skip: !user,
   });
 
@@ -79,12 +80,10 @@ const ApplyLeave = () => {
   });
 
   const [isSelfLeave, setSelfLeave] = useState(false);
-  const [editable, setEditable] = useState(false);
 
   const submitHandler = (data) => {
     data.admin = user?.admin;
     data.user = user?._id;
-    console.log(user);
     if (user.role === "EMPLOYEE") {
       const employee = employees.find(
         (employee) => employee.user._id === user?._id
@@ -121,7 +120,6 @@ const ApplyLeave = () => {
     leaveTypes,
     user?.role,
     isSelfLeave,
-    editable,
     leave,
     { xs: 12, sm: 6 },
     "medium"
@@ -138,9 +136,6 @@ const ApplyLeave = () => {
           setDefaultValues(formattedValues);
           if (employee.user._id === user._id) {
             setSelfLeave(true);
-          }
-          if (user.role === "HOD" || user.role === "ADMIN") {
-            setEditable(true);
           }
         }
         return;
@@ -164,6 +159,14 @@ const ApplyLeave = () => {
       availableLeaves: user?.availableLeaves,
     });
   }, [employees, hods, leave]);
+
+  if (user?.role === "ADMIN" && !leaveId)
+    return (
+      <UnAuthorized
+        title="Are you kidding"
+        description="You are the admin you do not need apply for leave"
+      />
+    );
 
   return (
     <Box>

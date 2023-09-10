@@ -4,12 +4,15 @@ import { DataGrid, GridActionsCellItem, GridToolbar } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Tooltip } from "@mui/material";
+import LinearProgress from "@mui/material/LinearProgress";
+
+import CustomNoRowsOverlay from "./No-data";
 
 export default function DataTable(props) {
   const [rows, setRows] = React.useState(props.rows);
   const [columns, setColumns] = React.useState(props.columns);
-  const { pageSize, handleSelection, deleteHandler, editHandler } = props;
-
+  const { pageSize, handleSelection, deleteHandler, editHandler, loading } =
+    props;
   const handleEditClick = (id) => () => {
     editHandler(id);
   };
@@ -18,11 +21,11 @@ export default function DataTable(props) {
     deleteHandler(id);
   };
 
-  React.useEffect(() => {
+  React.useMemo(() => {
     setRows(props.rows);
   }, [props.rows]);
 
-  React.useLayoutEffect(() => {
+  React.useMemo(() => {
     setColumns(props.columns);
   }, [props.columns]);
 
@@ -63,10 +66,10 @@ export default function DataTable(props) {
       };
       setColumns([...props.columns, actionData]);
     }
-  }, [props.columns]);
+  }, [rows, props.columns]);
 
   return (
-    <Box>
+    <Box sx={{ height: 500, width: "100%", padding: 0, margin: 0 }}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -86,7 +89,10 @@ export default function DataTable(props) {
         disableRowSelectionOnClick
         slots={{
           toolbar: GridToolbar,
+          noRowsOverlay: CustomNoRowsOverlay,
+          loadingOverlay: LinearProgress,
         }}
+        loading={loading}
       />
     </Box>
   );

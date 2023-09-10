@@ -10,31 +10,22 @@ import {
   useLeaveTypesCreateMutation,
   useLeaveTypesUpdateMutation,
   useGetLeaveTypesQuery,
+  useLeaveTypesDeleteMutation,
 } from "../../redux/services/leave-type.service";
 import useAuth from "../../hooks/useAuth";
 import { LoadingButton } from "@mui/lab";
+import DeleteConfirmation from "../../components/modal/DeleteConfirmation";
 const schema = yup
   .object({
-    name: yup.string().required(),
+    leaveTypes: yup.string().required(),
   })
   .required();
-
-const formData = [
-  {
-    name: "name",
-    variant: "outlined",
-    size: "small",
-    inputType: "text",
-    grid: { xs: 12 },
-    fullWidth: true,
-    label: "Name",
-  },
-];
 
 const LeaveType = () => {
   const [open, setOpen] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [activeId, setActiveId] = useState("");
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const { user } = useAuth();
   const { data: leaveTypes } = useGetLeaveTypesQuery(user?.admin, {
@@ -51,13 +42,18 @@ const LeaveType = () => {
     { isLoading: updateLeaveTypeLoading, isSuccess: updateLeaveTypesSuccess },
   ] = useLeaveTypesUpdateMutation();
 
+  const [deleteLeaveType, { isLoading: deleteLeaveTypeLoading }] =
+    useLeaveTypesDeleteMutation();
+
   //edit state
   const [defaultValues, setDefaultValues] = useState({
-    name: "",
+    leaveTypes: "",
   });
 
   const submitHandler = (data) => {
     data.admin = user.admin;
+    data.name = data.leaveTypes;
+    delete data.leaveTypes;
     if (!isUpdate) {
       leaveTypeCreate(data);
       return;
@@ -69,14 +65,15 @@ const LeaveType = () => {
     const leaveType = leaveTypes?.find((item) => item._id === id);
 
     setDefaultValues({
-      name: leaveType?.name,
+      leaveTypes: leaveType?.name,
     });
 
     setIsUpdate(true);
     setActiveId(id);
   };
-  const deleteHandler = (data) => {
-    console.log(data);
+
+  const onDeleteSubmit = () => {
+    deleteLeaveType({ id: activeId, setOpenDeleteModal });
   };
 
   const columns = [
@@ -88,6 +85,23 @@ const LeaveType = () => {
       width: 200,
     },
   ];
+  const formData = [
+    {
+      name: "leaveTypes",
+      variant: "outlined",
+      size: "small",
+      inputType: "text",
+      grid: { xs: 12 },
+      fullWidth: true,
+      label: "Name",
+      isVisible: true,
+    },
+  ];
+  //handle modal
+  const deleteHandler = (id) => {
+    setOpenDeleteModal(true);
+    setActiveId(id);
+  };
 
   return (
     <Box>
@@ -136,6 +150,14 @@ const LeaveType = () => {
           </Paper>
         </Box>
       </Stack>
+      <DeleteConfirmation
+        open={openDeleteModal}
+        loading={deleteLeaveTypeLoading}
+        onSubmit={onDeleteSubmit}
+        handleClose={() => setOpenDeleteModal(false)}
+        title="Do you want to delete this Leave Types?"
+        description="If you delete this leave types once, you can't restore it again"
+      />
     </Box>
   );
 };

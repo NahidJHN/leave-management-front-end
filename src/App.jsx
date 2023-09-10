@@ -39,7 +39,7 @@ export default function App() {
                 <Router />
               </DrawerAppBar>
             </Box>
-            <Box>
+            <Box position="relative" bottom="0px">
               <Copyright />
             </Box>
           </>

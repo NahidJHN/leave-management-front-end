@@ -17,6 +17,7 @@ export const departmentFormData = () => {
       grid: { xs: 12 },
       fullWidth: true,
       label: "Department Name",
+      isVisible: true,
     },
     {
       name: "alias",
@@ -26,6 +27,7 @@ export const departmentFormData = () => {
       grid: { xs: 12 },
       fullWidth: true,
       label: "Alias name",
+      isVisible: true,
     },
   ];
 
