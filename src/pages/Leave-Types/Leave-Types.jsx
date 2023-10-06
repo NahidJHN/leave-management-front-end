@@ -28,7 +28,7 @@ const LeaveType = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const { user } = useAuth();
-  const { data: leaveTypes } = useGetLeaveTypesQuery(user?.admin, {
+  const { data: leaveTypes, isLoading } = useGetLeaveTypesQuery(user?.admin, {
     skip: !user,
   });
 
@@ -146,6 +146,7 @@ const LeaveType = () => {
               hasAction={true}
               deleteHandler={deleteHandler}
               editHandler={editHandler}
+              loading={isLoading}
             />
           </Paper>
         </Box>

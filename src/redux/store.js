@@ -13,7 +13,11 @@ import { enqueueSnackbar } from "notistack";
  */
 export const successErrorHandler = () => (next) => (action) => {
   if (isRejectedWithValue(action)) {
-    enqueueSnackbar(action.payload?.data?.message, {
+    const error =
+      typeof action.payload?.data?.message === "string"
+        ? action.payload?.data?.message
+        : "Internal Server Error";
+    enqueueSnackbar(error, {
       variant: "error",
     });
   }
@@ -22,7 +26,6 @@ export const successErrorHandler = () => (next) => (action) => {
     isFulfilled(action) &&
     action.meta.baseQueryMeta.request.method !== "GET"
   ) {
-    console.log(action.payload?.message);
     enqueueSnackbar(action.payload?.message, {
       variant: "success",
     });

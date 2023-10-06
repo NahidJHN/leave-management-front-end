@@ -3,7 +3,7 @@ import { api } from "../base-query";
 export const leaveApi = api.injectEndpoints({
   endpoints: (build) => ({
     getLeaves: build.query({
-      query: (id) => "/leaves/" + id,
+      query: ({ id, sort = "descending" }) => `/leaves/${id}?sort=${sort}`,
       transformResponse(data) {
         return data.data;
       },

@@ -22,7 +22,7 @@ const Employee = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const { user } = useAuth();
-  const { data: employees } = useGetEmployeesQuery(user?.admin, {
+  const { data: employees, isLoading } = useGetEmployeesQuery(user?.admin, {
     skip: !user,
   });
 
@@ -78,13 +78,13 @@ const Employee = () => {
       field: "mobile",
       headerName: "Mobile",
       width: 130,
-      valueGetter: (params) => params.row.user.mobile,
+      valueGetter: (params) => params.row.user?.mobile,
     },
     {
       field: "email",
       headerName: "Email",
       width: 200,
-      valueGetter: (params) => params.row.user.email,
+      valueGetter: (params) => params.row.user?.email,
     },
     { field: "gender", headerName: "Gender", width: 130 },
     {
@@ -140,6 +140,7 @@ const Employee = () => {
             hasAction={true}
             deleteHandler={deleteHandler}
             editHandler={editHandler}
+            loading={isLoading}
           />
         </Paper>
       </Stack>

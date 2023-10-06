@@ -21,25 +21,29 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import DeleteConfirmation from "../../components/modal/DeleteConfirmation";
 import { useGetHodsQuery } from "../../redux/services/hod.service";
 
-const Leave = ({ filterTerms }) => {
+const Leave = ({ filterTerms, showHeader = true, sort = "descending" }) => {
   //auth hook
   const { user } = useAuth();
 
   //rkt hooks
-  const { data: leaves, isLoading } = useGetLeavesQuery(user?.admin, {
-    skip: !user,
-    selectFromResult: ({ data, ...rest }) => {
-      if (filterTerms === "all") return { data };
-      const getStatusKey = user?.role === "ADMIN" ? "adminStatus" : "hodStatus";
-      const filteredData = data?.filter((item) => {
-        if (user?.role === "EMPLOYEE") {
-          return item["adminStatus"] === filterTerms;
-        }
-        return item[getStatusKey] === filterTerms;
-      });
-      return { data: filteredData, ...rest };
-    },
-  });
+  const { data: leaves, isLoading } = useGetLeavesQuery(
+    { id: user?.admin, sort },
+    {
+      skip: !user,
+      selectFromResult: ({ data, ...rest }) => {
+        if (filterTerms === "all") return { data, ...rest };
+        const getStatusKey =
+          user?.role === "ADMIN" ? "adminStatus" : "hodStatus";
+        const filteredData = data?.filter((item) => {
+          if (user?.role === "EMPLOYEE") {
+            return item["adminStatus"] === filterTerms;
+          }
+          return item[getStatusKey] === filterTerms;
+        });
+        return { data: filteredData, ...rest };
+      },
+    }
+  );
 
   const { data: leaveTypes } = useGetLeaveTypesQuery(user?.admin, {
     skip: !user,
@@ -164,7 +168,7 @@ const Leave = ({ filterTerms }) => {
             user.role === "HOD") && (
             <Link to={`/leaves/apply?leaveid=${value}`}>
               <Tooltip title="View" arrow>
-                <VisibilityIcon sx={{ color: "white" }} />
+                <VisibilityIcon sx={{ color: "primary.main" }} />
               </Tooltip>
             </Link>
           )}
@@ -186,7 +190,7 @@ const Leave = ({ filterTerms }) => {
 
   return (
     <Box>
-      <AppHeader title="Leave" />
+      {showHeader && <AppHeader title="Leave" />}
       <Stack direction="row" marginTop={3} spacing={3}>
         <Paper sx={{ width: "100%" }}>
           <DataTable

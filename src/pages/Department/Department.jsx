@@ -38,7 +38,7 @@ const Department = () => {
   };
   const { user } = useAuth();
 
-  const { data: departments } = useGetDepartmentQuery(user?.admin, {
+  const { data: departments, isLoading } = useGetDepartmentQuery(user?.admin, {
     skip: !user,
   });
   const [departmentCreate, { isLoading: createDepartmentLoading }] =
@@ -152,6 +152,7 @@ const Department = () => {
               hasAction={true}
               deleteHandler={deleteHandler}
               editHandler={editHandler}
+              loading={isLoading}
             />
           </Paper>
         </Box>

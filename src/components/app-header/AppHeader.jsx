@@ -1,5 +1,5 @@
-import { Box, Paper, Stack, Typography, styled } from "@mui/material";
-import React, { PropsWithChildren } from "react";
+import { Box, Paper, Stack, Typography } from "@mui/material";
+import React from "react";
 
 function AppHeader(prop) {
   return (
@@ -19,7 +19,6 @@ function AppHeader(prop) {
           >
             {prop.title}
           </Typography>
-          <Box component="div"></Box>
           {prop.children}
         </Stack>
       </Box>

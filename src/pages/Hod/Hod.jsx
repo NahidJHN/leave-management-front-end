@@ -21,7 +21,7 @@ const Hod = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const { user } = useAuth();
-  const { data: hods } = useGetHodsQuery(user?.admin, {
+  const { data: hods, isLoading } = useGetHodsQuery(user?.admin, {
     skip: !user,
   });
 
@@ -138,6 +138,7 @@ const Hod = () => {
             hasAction={true}
             deleteHandler={handleDeleteModal}
             editHandler={editHandler}
+            loading={isLoading}
           />
         </Paper>
       </Stack>

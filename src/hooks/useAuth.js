@@ -3,8 +3,8 @@ import { useGetUserQuery } from "../redux/services/auth.service";
 
 const useAuth = () => {
   const token = useSelector((state) => state.auth.accessToken);
-  const { data } = useGetUserQuery(undefined, { skip: !token });
-  return { token, user: data?.data };
+  const { data, isLoading } = useGetUserQuery(undefined, { skip: !token });
+  return { token, user: data?.data, isLoading };
 };
 
 export default useAuth;

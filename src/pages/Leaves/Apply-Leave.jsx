@@ -40,13 +40,16 @@ const ApplyLeave = () => {
   const leaveId = searchParams.get("leaveid");
 
   //redux hooks
-  const { data: leave } = useGetLeavesQuery(user?.admin, {
-    skip: !user,
-    selectFromResult: ({ data }) => {
-      const findLeave = data?.find((item) => item._id === leaveId);
-      return { data: findLeave };
-    },
-  });
+  const { data: leave } = useGetLeavesQuery(
+    { id: user?.admin },
+    {
+      skip: !user,
+      selectFromResult: ({ data }) => {
+        const findLeave = data?.find((item) => item._id === leaveId);
+        return { data: findLeave };
+      },
+    }
+  );
 
   const { data: leaveTypes } = useGetLeaveTypesQuery(user?.admin, {
     skip: !user,
@@ -134,7 +137,7 @@ const ApplyLeave = () => {
         if (employee) {
           const formattedValues = makeDefaultObject(employee, leave);
           setDefaultValues(formattedValues);
-          if (employee.user._id === user._id) {
+          if (employee.user?._id === user._id) {
             setSelfLeave(true);
           }
         }
