@@ -10,12 +10,15 @@ export const hodApi = api.injectEndpoints({
     }),
 
     hodCreate: build.mutation({
-      query: (body) => ({
+      query: ({ body }) => ({
         url: "/hods",
         method: "POST",
         body,
       }),
-      async onQueryStarted(_arg, { queryFulfilled, dispatch }) {
+      async onQueryStarted(
+        { handleSubmitStatus },
+        { queryFulfilled, dispatch }
+      ) {
         try {
           const {
             data: { data },
@@ -25,6 +28,7 @@ export const hodApi = api.injectEndpoints({
               draft.unshift(data);
             })
           );
+          handleSubmitStatus();
         } catch (error) {
           console.log(error);
         }

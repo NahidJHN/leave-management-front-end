@@ -5,7 +5,7 @@ import { LoadingButton } from "@mui/lab";
 
 import FormComponent from "../../components/Form/Form";
 import useAuth from "../../hooks/useAuth";
-import { useGetDepartmentQuery } from "../../redux/services/department.service";
+import { useGetDepartmentsQuery } from "../../redux/services/department.service";
 import { toISO } from "../../utils/dateFormatter";
 import { useEmployeeCreateMutation } from "../../redux/services/employee.service";
 import SendIcon from "@mui/icons-material/Send";
@@ -13,32 +13,7 @@ import employeeFormData from "./Employee-Form";
 
 const AddEmployee = () => {
   const { user } = useAuth();
-
-  const { data: department } = useGetDepartmentQuery(user?.admin, {
-    skip: !user,
-  });
-
-  const [employeeCreate, { isLoading, isSuccess }] =
-    useEmployeeCreateMutation();
-
-  const submitHandler = (data) => {
-    const formData = {
-      ...data,
-      admin: user.admin,
-      dob: toISO(data.dob),
-      joiningDate: toISO(data.joiningDate),
-    };
-    employeeCreate(formData);
-  };
-
-  const { formData, schema } = employeeFormData(
-    department,
-    user?.role,
-    { xs: 12, sm: 6 },
-    "medium"
-  );
-
-  const [defaultValues, setDefaultValues] = useState({
+  const defaultFormState = {
     firstName: "",
     lastName: "",
     mobile: "",
@@ -48,16 +23,38 @@ const AddEmployee = () => {
     dob: "",
     joiningDate: "",
     address: "",
+  };
+
+  //local state
+  const [defaultValues, setDefaultValues] = useState(defaultFormState);
+
+  const { data: department } = useGetDepartmentsQuery(user?.admin, {
+    skip: !user,
   });
 
-  useEffect(() => {
-    if (user) {
-      setDefaultValues({
-        ...defaultValues,
-        department: user.department,
-      });
-    }
-  }, [user]);
+  const [employeeCreate, { isLoading, isSuccess }] =
+    useEmployeeCreateMutation();
+
+  const handleSubmitStatus = () => {
+    setDefaultValues(defaultFormState);
+  };
+
+  const submitHandler = (data) => {
+    const formData = {
+      ...data,
+      admin: user.admin,
+      dob: toISO(data.dob),
+      joiningDate: toISO(data.joiningDate),
+    };
+    employeeCreate({ body: formData, handleSubmitStatus });
+  };
+
+  const { formData, schema } = employeeFormData(
+    department,
+    user?.role,
+    { xs: 12, sm: 6 },
+    "medium"
+  );
 
   return (
     <Box>

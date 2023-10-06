@@ -8,7 +8,7 @@ import {
   useGetEmployeesQuery,
   useEmployeeDeleteMutation,
 } from "../../redux/services/employee.service";
-import { useGetDepartmentQuery } from "../../redux/services/department.service";
+import { useGetDepartmentsQuery } from "../../redux/services/department.service";
 import useAuth from "../../hooks/useAuth";
 import employeeFormData from "./Employee-Form";
 import { toISO } from "../../utils/dateFormatter";
@@ -26,7 +26,7 @@ const Employee = () => {
     skip: !user,
   });
 
-  const { data: department } = useGetDepartmentQuery(user?.admin, {
+  const { data: department } = useGetDepartmentsQuery(user?.admin, {
     skip: !user,
   });
 
@@ -107,6 +107,7 @@ const Employee = () => {
 
   const { formData, schema } = employeeFormData(
     department,
+    user?.role,
     { xs: 12, sm: 6 },
     "small"
   );

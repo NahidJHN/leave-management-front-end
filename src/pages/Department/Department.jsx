@@ -9,7 +9,7 @@ import FormComponent from "../../components/Form/Form";
 import {
   useDepartmentCreateMutation,
   useDepartmentUpdateMutation,
-  useGetDepartmentQuery,
+  useGetDepartmentsQuery,
   useDepartmentDeleteMutation,
 } from "../../redux/services/department.service";
 import useAuth from "../../hooks/useAuth";
@@ -17,28 +17,32 @@ import { LoadingButton } from "@mui/lab";
 import { departmentFormData } from "./Department-Form";
 import DeleteConfirmation from "../../components/modal/DeleteConfirmation";
 import UnAuthorized from "../../components/security/unAuthorized";
+import { set } from "react-hook-form";
 
 const Department = () => {
   const [open, setOpen] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [activeId, setActiveId] = useState("");
   //edit state
-  const [defaultValues, setDefaultValues] = useState({
+  const defaultFormState = {
     name: "",
     alias: "",
-  });
+  };
+
+  const [defaultValues, setDefaultValues] = useState(defaultFormState);
+
+  const [modalFormDefaultValue, setModalFormDefaultValue] =
+    useState(defaultFormState);
 
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const handleModal = () => {
     setOpen(!open);
-    setIsUpdate(false);
-    setDefaultValues({ name: "", alias: "" });
-    setActiveId("");
   };
+
   const { user } = useAuth();
 
-  const { data: departments, isLoading } = useGetDepartmentQuery(user?.admin, {
+  const { data: departments, isLoading } = useGetDepartmentsQuery(user?.admin, {
     skip: !user,
   });
   const [departmentCreate, { isLoading: createDepartmentLoading }] =
@@ -50,13 +54,22 @@ const Department = () => {
   const [deleteDepartment, { isLoading: deleteDepartmentLoading }] =
     useDepartmentDeleteMutation();
 
+  const handleSubmitStatus = () => {
+    setDefaultValues(defaultFormState);
+    setOpen(false);
+    setActiveId("");
+    setIsUpdate(false);
+    setOpenDeleteModal(false);
+    setModalFormDefaultValue(defaultFormState);
+  };
   const submitHandler = (data) => {
     data.admin = user.admin;
+
     if (!isUpdate) {
-      departmentCreate(data);
+      departmentCreate({ body: data, handleSubmitStatus });
       return;
     }
-    updateDepartment({ body: data, id: activeId });
+    updateDepartment({ body: data, id: activeId, handleSubmitStatus });
   };
 
   const editHandler = (id) => {
@@ -65,7 +78,7 @@ const Department = () => {
     setActiveId(id);
 
     const department = departments?.find((item) => item._id === id);
-    setDefaultValues({
+    setModalFormDefaultValue({
       name: department?.name,
       alias: department?.alias,
     });
@@ -77,8 +90,9 @@ const Department = () => {
   };
 
   const onDeleteSubmit = () => {
-    deleteDepartment({ id: activeId, setOpenDeleteModal });
+    deleteDepartment({ id: activeId, handleSubmitStatus });
   };
+
   const { formData, schema } = departmentFormData();
 
   const columns = [
@@ -123,6 +137,7 @@ const Department = () => {
                 data={formData}
                 onSubmit={submitHandler}
                 schema={schema}
+                defaultValues={defaultValues}
               >
                 <LoadingButton
                   loading={createDepartmentLoading}
@@ -164,8 +179,8 @@ const Department = () => {
         onSubmit={submitHandler}
         data={formData}
         schema={schema}
-        loading={updateDepartmentLoading}
-        defaultValues={defaultValues}
+        loading={updateDepartmentLoading || createDepartmentLoading}
+        defaultValues={modalFormDefaultValue}
       />
       <DeleteConfirmation
         open={openDeleteModal}

@@ -8,7 +8,7 @@ import {
   useGetHodsQuery,
   useHodDeleteMutation,
 } from "../../redux/services/hod.service";
-import { useGetDepartmentQuery } from "../../redux/services/department.service";
+import { useGetDepartmentsQuery } from "../../redux/services/department.service";
 import useAuth from "../../hooks/useAuth";
 import hodFormData from "./Hod-Form";
 import { toISO } from "../../utils/dateFormatter";
@@ -25,7 +25,7 @@ const Hod = () => {
     skip: !user,
   });
 
-  const { data: department } = useGetDepartmentQuery(user?.admin, {
+  const { data: department } = useGetDepartmentsQuery(user?.admin, {
     skip: !user,
   });
 
@@ -61,6 +61,7 @@ const Hod = () => {
       dob: hod.dob,
       joiningDate: hod.joiningDate,
       address: hod.address,
+      admin: hod.admin, //only set for update submit,
     });
   };
 
@@ -107,7 +108,7 @@ const Hod = () => {
       renderCell: ({ value }) => {
         if (department) {
           const departmentName = department.find((item) => item._id === value);
-          return departmentName.name;
+          return departmentName?.name;
         }
       },
     },

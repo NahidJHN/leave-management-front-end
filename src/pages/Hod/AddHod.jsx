@@ -1,24 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Paper, Stack, Typography } from "@mui/material";
 import AppHeader from "../../components/app-header/AppHeader";
 import { LoadingButton } from "@mui/lab";
 
 import FormComponent from "../../components/Form/Form";
 import useAuth from "../../hooks/useAuth";
-import { useGetDepartmentQuery } from "../../redux/services/department.service";
+import { useGetDepartmentsQuery } from "../../redux/services/department.service";
 import { toISO } from "../../utils/dateFormatter";
 import { useHodCreateMutation } from "../../redux/services/hod.service";
 import SendIcon from "@mui/icons-material/Send";
 import hodFormData from "./Hod-Form";
 
 const AddHod = () => {
+  const formDefaultState = {
+    firstName: "",
+    lastName: "",
+    mobile: "",
+    email: "",
+    gender: "",
+    department: "",
+    dob: "",
+    joiningDate: "",
+    address: "",
+  };
+
+  //local state
+  const [defaultValues, setDefaultValues] = useState(formDefaultState);
+
   const { user } = useAuth();
 
-  const { data: department } = useGetDepartmentQuery(user?.admin, {
+  const { data: department } = useGetDepartmentsQuery(user?.admin, {
     skip: !user,
   });
 
   const [hodCreate, { isLoading, isSuccess }] = useHodCreateMutation();
+
+  const handleSubmitStatus = () => {
+    setDefaultValues(formDefaultState);
+  };
 
   const submitHandler = (data) => {
     const formData = {
@@ -27,7 +46,7 @@ const AddHod = () => {
       dob: toISO(data.dob),
       joiningDate: toISO(data.joiningDate),
     };
-    hodCreate(formData);
+    hodCreate({ body: formData, handleSubmitStatus });
   };
 
   const { formData, schema } = hodFormData(
@@ -48,6 +67,7 @@ const AddHod = () => {
             onSubmit={submitHandler}
             schema={schema}
             isSuccess={isSuccess}
+            defaultValues={defaultValues}
           >
             <Stack>
               <LoadingButton

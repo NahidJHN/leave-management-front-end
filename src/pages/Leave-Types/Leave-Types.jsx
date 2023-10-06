@@ -22,7 +22,6 @@ const schema = yup
   .required();
 
 const LeaveType = () => {
-  const [open, setOpen] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [activeId, setActiveId] = useState("");
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -50,15 +49,24 @@ const LeaveType = () => {
     leaveTypes: "",
   });
 
+  const handleSubmitStatus = () => {
+    setOpenDeleteModal(false);
+    setIsUpdate(false);
+    setActiveId("");
+    setDefaultValues({
+      leaveTypes: "",
+    });
+  };
+
   const submitHandler = (data) => {
     data.admin = user.admin;
     data.name = data.leaveTypes;
     delete data.leaveTypes;
     if (!isUpdate) {
-      leaveTypeCreate(data);
+      leaveTypeCreate({ body: data, handleSubmitStatus });
       return;
     }
-    updateLeaveType({ body: data, id: activeId });
+    updateLeaveType({ body: data, id: activeId, handleSubmitStatus });
   };
 
   const editHandler = (id) => {
@@ -73,7 +81,7 @@ const LeaveType = () => {
   };
 
   const onDeleteSubmit = () => {
-    deleteLeaveType({ id: activeId, setOpenDeleteModal });
+    deleteLeaveType({ id: activeId, handleSubmitStatus });
   };
 
   const columns = [
@@ -110,7 +118,9 @@ const LeaveType = () => {
         <Box width="40%" display={{ xs: "none", sm: "none", md: "block" }}>
           <Paper sx={{ paddingY: 7, paddingX: 3 }}>
             <Stack spacing={4}>
-              <Typography variant="h6">New Leave Type</Typography>
+              <Typography variant="h6">
+                {activeId && isUpdate ? "Update" : "New"} Leave Type
+              </Typography>
               <FormComponent
                 data={formData}
                 onSubmit={submitHandler}
@@ -119,7 +129,7 @@ const LeaveType = () => {
                 defaultValues={defaultValues}
               >
                 <LoadingButton
-                  loading={createLeaveTypeLoading}
+                  loading={createLeaveTypeLoading || updateLeaveTypeLoading}
                   loadingPosition="end"
                   variant="contained"
                   disableRipple
@@ -128,8 +138,18 @@ const LeaveType = () => {
                   fullWidth
                   sx={{ marginTop: 3.5 }}
                 >
-                  Create LeaveType
+                  {activeId && isUpdate ? "Update" : "New"} LeaveType
                 </LoadingButton>
+                <Button
+                  variant="contained"
+                  disableRipple
+                  color="secondary"
+                  fullWidth
+                  sx={{ marginTop: 3.5 }}
+                  onClick={handleSubmitStatus}
+                >
+                  Reset
+                </Button>
               </FormComponent>
             </Stack>
           </Paper>

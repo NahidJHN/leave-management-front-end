@@ -7,7 +7,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useGetDepartmentQuery } from "../../redux/services/department.service";
+import { useGetDepartmentsQuery } from "../../redux/services/department.service";
 import useAuth from "../../hooks/useAuth";
 import HodList from "./EmployeeOverViewList";
 import EmployeeOverViewsSkeleton from "../SkeletonLoader/EmployeeOvervies.Skeletron";
@@ -15,7 +15,7 @@ import EmployeeOverViewsSkeleton from "../SkeletonLoader/EmployeeOvervies.Skelet
 export default function EmployeeOverViews({ peoples = [], title, isLoading }) {
   const { user, isLoading: userLoading } = useAuth();
 
-  const { data: departments, getDepartmentLoading } = useGetDepartmentQuery(
+  const { data: departments, getDepartmentLoading } = useGetDepartmentsQuery(
     user?.admin,
     {
       skip: !user,

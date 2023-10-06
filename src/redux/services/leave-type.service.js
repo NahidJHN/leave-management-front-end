@@ -10,12 +10,15 @@ export const leaveTypeApi = api.injectEndpoints({
     }),
 
     leaveTypesCreate: build.mutation({
-      query: (body) => ({
+      query: ({ body }) => ({
         url: "/leave-types",
         method: "POST",
         body,
       }),
-      async onQueryStarted(_arg, { queryFulfilled, dispatch }) {
+      async onQueryStarted(
+        { handleSubmitStatus },
+        { queryFulfilled, dispatch }
+      ) {
         try {
           const {
             data: { data },
@@ -25,6 +28,7 @@ export const leaveTypeApi = api.injectEndpoints({
               draft.unshift(data);
             })
           );
+          handleSubmitStatus();
         } catch (error) {
           console.log(error);
         }
@@ -36,7 +40,10 @@ export const leaveTypeApi = api.injectEndpoints({
         method: "PATCH",
         body,
       }),
-      async onQueryStarted(_args, { queryFulfilled, dispatch }) {
+      async onQueryStarted(
+        { handleSubmitStatus },
+        { queryFulfilled, dispatch }
+      ) {
         try {
           const {
             data: { data },
@@ -47,6 +54,7 @@ export const leaveTypeApi = api.injectEndpoints({
               draft[index] = data;
             })
           );
+          handleSubmitStatus();
         } catch (error) {
           console.log(error);
         }
@@ -58,7 +66,7 @@ export const leaveTypeApi = api.injectEndpoints({
         method: "DELETE",
       }),
       async onQueryStarted(
-        { setOpenDeleteModal },
+        { handleSubmitStatus },
         { queryFulfilled, dispatch }
       ) {
         try {
@@ -70,7 +78,7 @@ export const leaveTypeApi = api.injectEndpoints({
               draft.filter((item) => item._id !== data._id);
             })
           );
-          setOpenDeleteModal(false);
+          handleSubmitStatus(false);
         } catch (error) {
           console.log(error);
         }

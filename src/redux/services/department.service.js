@@ -2,7 +2,7 @@ import { api } from "../base-query";
 
 export const departmentApi = api.injectEndpoints({
   endpoints: (build) => ({
-    getDepartment: build.query({
+    getDepartments: build.query({
       query: (id) => "/departments/" + id,
       transformResponse(data) {
         return data.data;
@@ -10,21 +10,25 @@ export const departmentApi = api.injectEndpoints({
     }),
 
     departmentCreate: build.mutation({
-      query: (body) => ({
+      query: ({ body }) => ({
         url: "/departments",
         method: "POST",
         body,
       }),
-      async onQueryStarted(_arg, { queryFulfilled, dispatch }) {
+      async onQueryStarted(
+        { handleSubmitStatus },
+        { queryFulfilled, dispatch }
+      ) {
         try {
           const {
             data: { data },
           } = await queryFulfilled;
           dispatch(
-            api.util.updateQueryData("getDepartment", data.admin, (draft) => {
+            api.util.updateQueryData("getDepartments", data.admin, (draft) => {
               draft.unshift(data);
             })
           );
+          handleSubmitStatus();
         } catch (error) {
           console.log(error);
         }
@@ -36,29 +40,8 @@ export const departmentApi = api.injectEndpoints({
         method: "PATCH",
         body,
       }),
-      async onQueryStarted(_args, { queryFulfilled, dispatch }) {
-        try {
-          const {
-            data: { data },
-          } = await queryFulfilled;
-          dispatch(
-            api.util.updateQueryData("getDepartment", data.admin, (draft) => {
-              const index = draft.findIndex((item) => item._id === data._id);
-              draft[index] = data;
-            })
-          );
-        } catch (error) {
-          console.log(error);
-        }
-      },
-    }),
-    departmentDelete: build.mutation({
-      query: (body) => ({
-        url: "/departments/" + body.id,
-        method: "DELETE",
-      }),
       async onQueryStarted(
-        { setOpenDeleteModal },
+        { handleSubmitStatus },
         { queryFulfilled, dispatch }
       ) {
         try {
@@ -66,11 +49,37 @@ export const departmentApi = api.injectEndpoints({
             data: { data },
           } = await queryFulfilled;
           dispatch(
-            api.util.updateQueryData("getDepartment", data.admin, (draft) => {
+            api.util.updateQueryData("getDepartments", data.admin, (draft) => {
+              const index = draft.findIndex((item) => item._id === data._id);
+              draft[index] = data;
+            })
+          );
+          handleSubmitStatus();
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
+    departmentDelete: build.mutation({
+      query: ({ id }) => ({
+        url: "/departments/" + id,
+        method: "DELETE",
+      }),
+      async onQueryStarted(
+        { handleSubmitStatus },
+        { queryFulfilled, dispatch }
+      ) {
+        try {
+          const {
+            data: { data },
+          } = await queryFulfilled;
+          console.log(data.admin);
+          dispatch(
+            api.util.updateQueryData("getDepartments", data.admin, (draft) => {
               draft.filter((item) => item._id !== data._id);
             })
           );
-          setOpenDeleteModal(false);
+          handleSubmitStatus();
         } catch (error) {
           console.log(error);
         }
@@ -80,7 +89,7 @@ export const departmentApi = api.injectEndpoints({
 });
 
 export const {
-  useGetDepartmentQuery,
+  useGetDepartmentsQuery,
   useDepartmentCreateMutation,
   useDepartmentUpdateMutation,
   useDepartmentDeleteMutation,

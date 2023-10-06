@@ -10,12 +10,15 @@ export const employeeApi = api.injectEndpoints({
     }),
 
     employeeCreate: build.mutation({
-      query: (body) => ({
+      query: ({ body }) => ({
         url: "/employees",
         method: "POST",
         body,
       }),
-      async onQueryStarted(_arg, { queryFulfilled, dispatch }) {
+      async onQueryStarted(
+        { handleSubmitStatus },
+        { queryFulfilled, dispatch }
+      ) {
         try {
           const {
             data: { data },
@@ -25,6 +28,7 @@ export const employeeApi = api.injectEndpoints({
               draft.unshift(data);
             })
           );
+          handleSubmitStatus();
         } catch (error) {
           console.log(error);
         }
