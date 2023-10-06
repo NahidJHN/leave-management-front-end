@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from "react";
 import Box from "@mui/material/Box";
 import { DataGrid, GridActionsCellItem, GridToolbar } from "@mui/x-data-grid";

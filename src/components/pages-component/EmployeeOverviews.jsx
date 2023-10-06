@@ -1,12 +1,4 @@
-import {
-  Box,
-  Divider,
-  List,
-  Paper,
-  Skeleton,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Divider, List, Paper, Typography } from "@mui/material";
 import { useGetDepartmentsQuery } from "../../redux/services/department.service";
 import useAuth from "../../hooks/useAuth";
 import HodList from "./EmployeeOverViewList";
