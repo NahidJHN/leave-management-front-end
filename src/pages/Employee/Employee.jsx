@@ -12,7 +12,6 @@ import { useGetDepartmentsQuery } from "../../redux/services/department.service"
 import useAuth from "../../hooks/useAuth";
 import employeeFormData from "./Employee-Form";
 import { toISO } from "../../utils/dateFormatter";
-import { Link } from "react-router-dom";
 import DeleteConfirmation from "../../components/modal/DeleteConfirmation";
 
 const Employee = () => {

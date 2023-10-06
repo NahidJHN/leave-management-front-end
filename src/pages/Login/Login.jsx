@@ -12,13 +12,10 @@ import Container from "@mui/material/Container";
 import { useLoginMutation } from "../../redux/services/auth.service";
 import { LoadingButton } from "@mui/lab";
 import LoginIcon from "@mui/icons-material/Login";
-import { useNavigate } from "react-router-dom";
 import { Copyright } from "../../App";
 
 export default function SignIn() {
-  const navigate = useNavigate();
-
-  const [login, { isLoading, isSuccess }] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
   const handleSubmit = (event) => {
     event.preventDefault();

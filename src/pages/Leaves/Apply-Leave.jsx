@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { Box, Paper, Stack, Typography } from "@mui/material";
 import AppHeader from "../../components/app-header/AppHeader";

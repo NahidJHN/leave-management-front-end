@@ -17,7 +17,6 @@ import { LoadingButton } from "@mui/lab";
 import { departmentFormData } from "./Department-Form";
 import DeleteConfirmation from "../../components/modal/DeleteConfirmation";
 import UnAuthorized from "../../components/security/unAuthorized";
-import { set } from "react-hook-form";
 
 const Department = () => {
   const [open, setOpen] = useState(false);

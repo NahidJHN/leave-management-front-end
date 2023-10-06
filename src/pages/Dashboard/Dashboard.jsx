@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import DoneIcon from "@mui/icons-material/Done";
@@ -15,11 +15,11 @@ import EmployeeList from "./EmployeeList";
 import Leave from "../Leaves/Leaves";
 
 const Dashboard = () => {
-  const [selected, setSelected] = useState([]);
+  // const [selected, setSelected] = useState([]);
 
-  const handleSelection = (data) => {
-    setSelected(data);
-  };
+  // const handleSelection = (data) => {
+  //   setSelected(data);
+  // };
 
   //auth hook
   const { user } = useAuth();
