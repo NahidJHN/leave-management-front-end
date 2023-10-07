@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -25,7 +26,14 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import HistoryIcon from "@mui/icons-material/History";
 import BeenHereIcon from "@mui/icons-material/Beenhere";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { Collapse, Stack } from "@mui/material";
+import {
+  Collapse,
+  Menu,
+  MenuItem,
+  Stack,
+  Tooltip,
+  useMediaQuery,
+} from "@mui/material";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PeopleIcon from "@mui/icons-material/People";
@@ -33,6 +41,10 @@ import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import Groups2Icon from "@mui/icons-material/Groups2";
 import { Link } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { useNavigate } from "react-router-dom";
+import { userLogout } from "../../redux/services/auth.slice";
+import { useDispatch } from "react-redux";
 
 const drawerWidth = 240;
 const activeColor = "rgba(255, 255, 255, 0.08)";
@@ -261,6 +273,39 @@ export default function DrawerAppBar({ children }) {
   };
 
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const settings = [
+    {
+      title: "Profile",
+      action: () => {
+        navigate("/profile");
+      },
+    },
+    {
+      title: "Logout",
+      action: () => {
+        dispatch(userLogout());
+      },
+    },
+  ];
+
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  React.useEffect(() => {
+    if (isSmallScreen) handleDrawerClose();
+  }, [isSmallScreen]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -278,23 +323,61 @@ export default function DrawerAppBar({ children }) {
           >
             <MenuIcon />
           </IconButton>
-          <Box
-            sx={{
-              textDecoration: "none",
-              color: "text.primary",
-            }}
-            component={Link}
-            to="/"
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            width="100%"
           >
-            <Typography
-              display={open ? "none" : "block"}
-              variant="h6"
-              noWrap
-              component="div"
+            <Box
+              sx={{
+                textDecoration: "none",
+                color: "text.primary",
+              }}
+              component={Link}
+              to="/"
             >
-              Leave Management
-            </Typography>
-          </Box>
+              <Typography
+                display={open ? "none" : "block"}
+                variant="h6"
+                noWrap
+                component="div"
+              >
+                Leave Management
+              </Typography>
+            </Box>
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu}>
+                  <AccountCircleIcon
+                    sx={{ fontSize: "2.5rem", color: "secondary.main" }}
+                  />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem key={setting.title} onClick={setting.action}>
+                    <Typography textAlign="center">{setting.title}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          </Stack>
         </Toolbar>
         <Divider />
       </AppBar>

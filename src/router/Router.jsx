@@ -17,6 +17,7 @@ import ApplyLeave from "../pages/Leaves/Apply-Leave";
 import AddHod from "../pages/Hod/AddHod";
 import Hod from "../pages/Hod/Hod";
 import LeaveHistory from "../pages/Leaves/Leave-History";
+import Profile from "../pages/Profile/Profile";
 
 const Router = () => {
   return (
@@ -25,6 +26,7 @@ const Router = () => {
         <Route path="/" element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="department" element={<Department />} />
+        <Route path="profile" element={<Profile />} />
         <Route path="employees">
           <Route path="add" element={<AddEmployee />} />
           <Route path="" element={<Employee />} />

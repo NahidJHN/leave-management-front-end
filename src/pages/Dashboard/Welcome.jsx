@@ -19,7 +19,7 @@ function Welcome() {
         </Avatar>
       </Box>
       <Box>
-        <Typography variant="h4" color="text.secondary">
+        <Typography variant="h5" color="text.secondary">
           Welcome, Back
         </Typography>
         <Typography variant="h6">

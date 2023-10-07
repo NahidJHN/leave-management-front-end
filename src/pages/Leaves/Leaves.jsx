@@ -188,7 +188,7 @@ const Leave = ({ filterTerms, showHeader = true, sort = "descending" }) => {
     <Box>
       {showHeader && <AppHeader title="Leave" />}
       <Stack direction="row" marginTop={3} spacing={3}>
-        <Paper sx={{ width: "100%" }}>
+        <Paper sx={{ width: "100%", padding: 0 }}>
           <DataTable
             columns={columns}
             rows={leaves || []}

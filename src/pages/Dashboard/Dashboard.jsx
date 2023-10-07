@@ -65,30 +65,30 @@ const Dashboard = () => {
             count={countData.all}
             description="All Leave Applied"
             customColor="warning"
-            icon={<ForwardToInboxIcon sx={{ fontSize: 75 }} />}
+            icon={<ForwardToInboxIcon sx={{ fontSize: 100 }} />}
           />
           <LeaveHistoryCard
             count={countData.pending}
             description="Pending"
             customColor="primary"
-            icon={<QueryBuilderIcon sx={{ fontSize: 75 }} />}
+            icon={<QueryBuilderIcon sx={{ fontSize: 100 }} />}
           />
           <LeaveHistoryCard
             description="Approved"
             customColor="success"
             count={countData.approved}
-            icon={<DoneIcon sx={{ fontSize: 75 }} />}
+            icon={<DoneIcon sx={{ fontSize: 100 }} />}
           />
           <LeaveHistoryCard
             description="Rejected"
             customColor="error"
             count={countData.rejected}
-            icon={<ClearIcon sx={{ fontSize: 75 }} />}
+            icon={<ClearIcon sx={{ fontSize: 100 }} />}
           />
         </Grid>
       </Box>
       {user?.role === "ADMIN" && (
-        <Grid container spacing={1} paddingTop={2}>
+        <Grid container rowSpacing={2} columnSpacing={{ md: 1 }} paddingTop={2}>
           <Grid item xs={12} sm={6} md={4}>
             <HeadsOfDepartment />
           </Grid>
@@ -105,7 +105,7 @@ const Dashboard = () => {
         <Typography variant="h4" color="text.secondary">
           Latest Leave Applications
         </Typography>
-        <Leave filterTerms="PENDING" showHeader={false} sort="ascending" />;
+        <Leave filterTerms="PENDING" showHeader={false} sort="ascending" />
       </Box>
     </Box>
   );
