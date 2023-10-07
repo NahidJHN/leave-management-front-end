@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Box,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -8,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 function EmployeeOverviewList({ people, department }) {
   const firstName = people.firstName;
@@ -44,8 +43,8 @@ function EmployeeOverviewList({ people, department }) {
           color: "text.primary",
         }}
         alignItems="flex-start"
-        component={Link}
-        to={`/profile/${people._id}`}
+        // component={Link}
+        // to={`/profile/${people._id}`}
       >
         <ListItemAvatar>
           <Avatar
@@ -73,24 +72,12 @@ function EmployeeOverviewList({ people, department }) {
                 >
                   Department-
                 </Typography>
-                {department}
+                {department} <br />
+                <Typography variant="strong">Mobile </Typography>
+                {people?.user?.mobile}
               </React.Fragment>
             }
           />
-          {(people?.user?.mobile || people?.user?.email) && (
-            <Box>
-              {people.user?.mobile && (
-                <Typography variant="span" component="p">
-                  Mobile: {people?.user?.mobile}
-                </Typography>
-              )}
-              {people.user?.email && (
-                <Typography variant="span" component="p">
-                  Email: {people?.user?.email}
-                </Typography>
-              )}
-            </Box>
-          )}
         </Stack>
       </ListItem>
     </>

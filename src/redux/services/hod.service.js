@@ -68,11 +68,13 @@ export const hodApi = api.injectEndpoints({
       ) {
         try {
           const {
-            data: { data },
+            data: {
+              data: { hod },
+            },
           } = await queryFulfilled;
           dispatch(
-            api.util.updateQueryData("getHods", data.admin, (draft) => {
-              draft.filter((item) => item._id !== data._id);
+            api.util.updateQueryData("getHods", hod.admin, (draft) => {
+              return draft.filter((item) => item._id !== hod._id);
             })
           );
           setOpenDeleteModal(false);

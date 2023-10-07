@@ -278,20 +278,39 @@ export default function DrawerAppBar({ children }) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            display={open ? "none" : "block"}
-            variant="h6"
-            noWrap
-            component="div"
+          <Box
+            sx={{
+              textDecoration: "none",
+              color: "text.primary",
+            }}
+            component={Link}
+            to="/"
           >
-            Leave Management
-          </Typography>
+            <Typography
+              display={open ? "none" : "block"}
+              variant="h6"
+              noWrap
+              component="div"
+            >
+              Leave Management
+            </Typography>
+          </Box>
         </Toolbar>
         <Divider />
       </AppBar>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <Typography variant="h6">Leave Management</Typography>
+          <Box
+            sx={{
+              textDecoration: "none",
+              color: "text.primary",
+            }}
+            component={Link}
+            to="/"
+          >
+            <Typography variant="h6">Leave Management</Typography>
+          </Box>
+
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />

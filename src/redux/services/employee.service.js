@@ -68,12 +68,18 @@ export const employeeApi = api.injectEndpoints({
       ) {
         try {
           const {
-            data: { data },
+            data: {
+              data: { employee },
+            },
           } = await queryFulfilled;
           dispatch(
-            api.util.updateQueryData("getEmployees", data.admin, (draft) => {
-              draft.filter((item) => item._id !== data._id);
-            })
+            api.util.updateQueryData(
+              "getEmployees",
+              employee.admin,
+              (draft) => {
+                return draft.filter((item) => item._id !== employee._id);
+              }
+            )
           );
           setOpenDeleteModal(false);
         } catch (error) {

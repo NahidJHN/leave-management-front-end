@@ -87,18 +87,20 @@ const Dashboard = () => {
           />
         </Grid>
       </Box>
-      <Grid container spacing={1} paddingTop={2}>
-        <Grid item xs={12} sm={6} md={4}>
-          <HeadsOfDepartment />
+      {user?.role === "ADMIN" && (
+        <Grid container spacing={1} paddingTop={2}>
+          <Grid item xs={12} sm={6} md={4}>
+            <HeadsOfDepartment />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <EmployeeList />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <HeadsOfDepartment />
+          </Grid>
+          <Grid item xs={12} sm={6} md={8}></Grid>
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <HeadsOfDepartment />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <EmployeeList />
-        </Grid>
-        <Grid item xs={12} sm={6} md={8}></Grid>
-      </Grid>
+      )}
       <Box>
         <Typography variant="h4" color="text.secondary">
           Latest Leave Applications

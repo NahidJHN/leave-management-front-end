@@ -64,7 +64,7 @@ export const leaveApi = api.injectEndpoints({
           } = await queryFulfilled;
           dispatch(
             api.util.updateQueryData("getLeaves", data.admin, (draft) => {
-              draft.filter((item) => item._id !== data._id);
+              return draft.filter((item) => item._id !== data._id);
             })
           );
           setDeleteModal(false);

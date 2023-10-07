@@ -21,6 +21,7 @@ import { useSearchParams } from "react-router-dom";
 import UnAuthorized from "../../components/security/unAuthorized";
 
 const makeDefaultObject = (defaultData, leave) => {
+  console.log(leave);
   return {
     firstName: defaultData?.firstName,
     lastName: defaultData?.lastName,
@@ -31,6 +32,8 @@ const makeDefaultObject = (defaultData, leave) => {
     hodStatus: leave?.hodStatus || "PENDING",
     adminStatus: leave?.adminStatus || "PENDING",
     note: leave?.note,
+    hodRemark: leave?.hodRemark,
+    adminRemark: leave?.adminRemark,
   };
 };
 
@@ -81,6 +84,8 @@ const ApplyLeave = () => {
     lastName: "",
     availableLeaves: "",
     note: "",
+    adminRemark: "",
+    hodRemark: "",
   });
 
   const [isSelfLeave, setSelfLeave] = useState(false);

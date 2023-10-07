@@ -73,10 +73,9 @@ export const departmentApi = api.injectEndpoints({
           const {
             data: { data },
           } = await queryFulfilled;
-          console.log(data.admin);
           dispatch(
             api.util.updateQueryData("getDepartments", data.admin, (draft) => {
-              draft.filter((item) => item._id !== data._id);
+              return draft.filter((item) => item._id !== data._id);
             })
           );
           handleSubmitStatus();

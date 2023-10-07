@@ -75,7 +75,7 @@ export const leaveTypeApi = api.injectEndpoints({
           } = await queryFulfilled;
           dispatch(
             api.util.updateQueryData("getLeaveTypes", data.admin, (draft) => {
-              draft.filter((item) => item._id !== data._id);
+              return draft.filter((item) => item._id !== data._id);
             })
           );
           handleSubmitStatus(false);

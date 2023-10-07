@@ -26,20 +26,31 @@ const leaveFormData = (
     .required();
 
   const isDisabled = (role, leave) => {
-    const startDate = dayjs(leave?.startDate);
-    const currentDate = dayjs();
+    if (!leave) return false;
 
-    const diff = startDate.diff(currentDate, "day");
-    if (diff <= 0) {
+    //check if leave is expired then disable
+    if (leave) {
+      const startDate = dayjs(leave?.startDate);
+      const currentDate = dayjs();
+
+      const diff = startDate.diff(currentDate, "day");
+      if (diff < 0) return true;
+    }
+
+    if (role === "HOD") {
+      if (leave && !isSelf) return true;
+      if (leave.adminStatus !== "PENDING") return true;
+    }
+
+    if (role === "EMPLOYEE") {
+      if (leave && leave.hodStatus !== "PENDING") return true;
+    }
+
+    if (role === "ADMIN") {
       return true;
     }
-    if (
-      (!isSelf && leave) ||
-      (role === "HOD" && leave?.adminStatus !== "PENDING") ||
-      (role === "EMPLOYEE" && leave?.hodStatus !== "PENDING")
-    ) {
-      return true;
-    }
+
+    return false;
   };
 
   const formData = [
@@ -172,7 +183,7 @@ const leaveFormData = (
       fullWidth: true,
       label: "Reason for leave",
       minRows: 4,
-      disabled: !isSelf && leave,
+      disabled: isDisabled(role, leave),
       isVisible: true,
     },
     {
@@ -185,7 +196,7 @@ const leaveFormData = (
       label: "HOD remark",
       minRows: 4,
       disabled: (role !== "HOD" && !isSelf) || leave?.adminStatus !== "PENDING",
-      isVisible: role === "HOD" || role === "ADMIN",
+      isVisible: !leave && role === "HOD" ? false : true,
     },
     {
       name: "adminRemark",
@@ -197,7 +208,7 @@ const leaveFormData = (
       label: "Admin Remark",
       minRows: 4,
       disabled: role !== "ADMIN",
-      isVisible: role === "ADMIN",
+      isVisible: true,
     },
   ];
   return { schema, formData };

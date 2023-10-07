@@ -163,15 +163,11 @@ const Leave = ({ filterTerms, showHeader = true, sort = "descending" }) => {
           justifyContent="center"
           alignItems="center"
         >
-          {((user.role === "EMPLOYEE" && row.hodStatus === "PENDING") ||
-            user.role === "ADMIN" ||
-            user.role === "HOD") && (
-            <Link to={`/leaves/apply?leaveid=${value}`}>
-              <Tooltip title="View" arrow>
-                <VisibilityIcon sx={{ color: "primary.main" }} />
-              </Tooltip>
-            </Link>
-          )}
+          <Link to={`/leaves/apply?leaveid=${value}`}>
+            <Tooltip title="View" arrow>
+              <VisibilityIcon sx={{ color: "primary.main" }} />
+            </Tooltip>
+          </Link>
 
           {row.hodStatus === "PENDING" &&
             row.adminStatus === "PENDING" &&
