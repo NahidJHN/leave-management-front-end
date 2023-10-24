@@ -51,6 +51,7 @@ export default function SignIn() {
             label="Email Address"
             name="email"
             autoComplete="email"
+            defaultValue="admin@lm.com"
             autoFocus
           />
           <TextField
@@ -61,6 +62,7 @@ export default function SignIn() {
             label="Password"
             type="password"
             id="password"
+            defaultValue="admin12345"
             autoComplete="current-password"
           />
           <FormControlLabel
