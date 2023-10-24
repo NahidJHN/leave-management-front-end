@@ -1,9 +1,7 @@
 // Or from '@reduxjs/toolkit/query' if not using the auto-generated hooks
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// const baseURI = "http://localhost:9090/api/v1";
-// const baseURI = "https://leave-mgt.onrender.com/api/v1";
-const baseURI = "leave-management-henna.vercel.app";
+const baseURI = "https://leave-management-be.vercel.app/";
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 export const api = createApi({
