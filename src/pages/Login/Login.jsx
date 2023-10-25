@@ -12,7 +12,28 @@ import Container from "@mui/material/Container";
 import { useLoginMutation } from "../../redux/services/auth.service";
 import { LoadingButton } from "@mui/lab";
 import LoginIcon from "@mui/icons-material/Login";
+import CopyAllSharpIcon from "@mui/icons-material/CopyAllSharp";
 import { Copyright } from "../../App";
+import { enqueueSnackbar } from "notistack";
+import {
+  FormControl,
+  IconButton,
+  Input,
+  InputAdornment,
+  InputLabel,
+  Tooltip,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+
+// const Input = styled(Input)(({ theme }) => ({
+//   padding: 0,
+//   "&.MuiInput-underline:before": {
+//     borderBottom: "none",
+//   },
+//   "&.MuiInput-underline:after": {
+//     borderBottom: "none",
+//   },
+// }));
 
 export default function SignIn() {
   const [login, { isLoading }] = useLoginMutation();
@@ -26,8 +47,23 @@ export default function SignIn() {
     });
   };
 
+  //copy to clipboard
+  const [copySuccess, setCopySuccess] = React.useState("");
+  const adminEmailInputRef = React.useRef(null);
+  const hodInputEmailRef = React.useRef(null);
+  const employeeEmailInput = React.useRef(null);
+  const passwordRef = React.useRef(null);
+
+  const copyToClipboard = (element) => {
+    navigator.clipboard.writeText(element.value);
+    enqueueSnackbar("Copied to clipboard", {
+      variant: "info",
+      anchorOrigin: { vertical: "top", horizontal: "center" },
+    });
+  };
+
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="sm">
       <Box
         sx={{
           marginTop: 8,
@@ -97,6 +133,147 @@ export default function SignIn() {
           </Grid>
         </Box>
       </Box>
+
+      <Typography variant="h6" color="text.mute" mt={2}>
+        Authenticaion
+      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Grid
+          container
+          spacing={2}
+          sx={{ mt: 1, mb: 5 }}
+          border="1px solid #ddd"
+          p={1}
+        >
+          {/* copy to clipboard */}
+          <Grid item xs={6}>
+            <FormControl variant="standard">
+              <InputLabel htmlFor="standard-adornment-password">
+                Admin email
+              </InputLabel>
+              <Input
+                id="standard-adornment-password"
+                type="text"
+                size="small"
+                defaultValue="admin@lm.com"
+                inputRef={adminEmailInputRef}
+                disabled
+                disableUnderline={true}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <Tooltip title="Copy Email">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() =>
+                          copyToClipboard(adminEmailInputRef.current)
+                        }
+                      >
+                        <CopyAllSharpIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={6}>
+            <FormControl variant="standard">
+              <InputLabel htmlFor="standard-adornment-password">
+                Hod email
+              </InputLabel>
+              <Input
+                id="standard-adornment-password"
+                type="text"
+                size="small"
+                defaultValue="hod@lm.com"
+                inputRef={hodInputEmailRef}
+                disabled
+                disableUnderline={true}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <Tooltip title="Copy Email">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() =>
+                          copyToClipboard(hodInputEmailRef.current)
+                        }
+                      >
+                        <CopyAllSharpIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={6}>
+            <InputLabel htmlFor="standard-adornment-password">
+              Employee email
+            </InputLabel>
+            <FormControl variant="standard">
+              <Input
+                id="standard-adornment-password"
+                type="text"
+                size="small"
+                defaultValue="employee@lm.com"
+                inputRef={employeeEmailInput}
+                disabled
+                disableUnderline={true}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <Tooltip title="Copy Email">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() =>
+                          copyToClipboard(employeeEmailInput.current)
+                        }
+                      >
+                        <CopyAllSharpIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={6}>
+            <FormControl variant="standard">
+              <InputLabel htmlFor="standard-adornment-password">
+                Master password
+              </InputLabel>
+              <Input
+                id="standard-adornment-password"
+                type="text"
+                size="small"
+                defaultValue="admin12345"
+                disabled
+                disableUnderline={true}
+                inputRef={passwordRef}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <Tooltip title="copy password">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => copyToClipboard(passwordRef.current)}
+                      >
+                        <CopyAllSharpIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Box>
+
       <Copyright />
     </Container>
   );
